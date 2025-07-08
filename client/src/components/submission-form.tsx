@@ -16,7 +16,32 @@ import { Upload, X } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required").max(255),
-  category: z.enum(["ai-tools", "ai-products", "ai-agents"], {
+  category: z.enum([
+    "ai-tools", 
+    "ai-products", 
+    "ai-agents",
+    "large-language-models",
+    "computer-vision",
+    "natural-language-processing",
+    "machine-learning-platforms",
+    "ai-art-generators",
+    "ai-video-tools",
+    "ai-audio-tools",
+    "ai-writing-assistants",
+    "ai-code-assistants",
+    "ai-data-analytics",
+    "ai-automation",
+    "ai-chatbots",
+    "ai-research-tools",
+    "ai-healthcare",
+    "ai-finance",
+    "ai-education",
+    "ai-marketing",
+    "ai-productivity",
+    "ai-gaming",
+    "ai-robotics",
+    "ai-infrastructure"
+  ], {
     required_error: "Category is required",
   }),
   url: z.string().url("Invalid URL"),
@@ -133,6 +158,27 @@ export default function SubmissionForm() {
                   <SelectItem value="ai-tools">AI Tools</SelectItem>
                   <SelectItem value="ai-products">AI Products</SelectItem>
                   <SelectItem value="ai-agents">AI Agents</SelectItem>
+                  <SelectItem value="large-language-models">Large Language Models</SelectItem>
+                  <SelectItem value="computer-vision">Computer Vision</SelectItem>
+                  <SelectItem value="natural-language-processing">Natural Language Processing</SelectItem>
+                  <SelectItem value="machine-learning-platforms">ML Platforms</SelectItem>
+                  <SelectItem value="ai-art-generators">AI Art Generators</SelectItem>
+                  <SelectItem value="ai-video-tools">AI Video Tools</SelectItem>
+                  <SelectItem value="ai-audio-tools">AI Audio Tools</SelectItem>
+                  <SelectItem value="ai-writing-assistants">Writing Assistants</SelectItem>
+                  <SelectItem value="ai-code-assistants">Code Assistants</SelectItem>
+                  <SelectItem value="ai-data-analytics">Data Analytics</SelectItem>
+                  <SelectItem value="ai-automation">Automation</SelectItem>
+                  <SelectItem value="ai-chatbots">Chatbots</SelectItem>
+                  <SelectItem value="ai-research-tools">Research Tools</SelectItem>
+                  <SelectItem value="ai-healthcare">Healthcare</SelectItem>
+                  <SelectItem value="ai-finance">Finance</SelectItem>
+                  <SelectItem value="ai-education">Education</SelectItem>
+                  <SelectItem value="ai-marketing">Marketing</SelectItem>
+                  <SelectItem value="ai-productivity">Productivity</SelectItem>
+                  <SelectItem value="ai-gaming">Gaming</SelectItem>
+                  <SelectItem value="ai-robotics">Robotics</SelectItem>
+                  <SelectItem value="ai-infrastructure">Infrastructure</SelectItem>
                 </SelectContent>
               </Select>
               {errors.category && (

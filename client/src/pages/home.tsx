@@ -19,6 +19,27 @@ export default function Home() {
     { id: "ai-tools", label: "AI Tools", icon: "🛠️" },
     { id: "ai-products", label: "AI Products", icon: "📦" },
     { id: "ai-agents", label: "AI Agents", icon: "🤖" },
+    { id: "large-language-models", label: "Large Language Models", icon: "🧠" },
+    { id: "computer-vision", label: "Computer Vision", icon: "👁️" },
+    { id: "natural-language-processing", label: "NLP", icon: "💬" },
+    { id: "machine-learning-platforms", label: "ML Platforms", icon: "⚙️" },
+    { id: "ai-art-generators", label: "AI Art", icon: "🎨" },
+    { id: "ai-video-tools", label: "AI Video", icon: "🎬" },
+    { id: "ai-audio-tools", label: "AI Audio", icon: "🎵" },
+    { id: "ai-writing-assistants", label: "Writing Assistants", icon: "✍️" },
+    { id: "ai-code-assistants", label: "Code Assistants", icon: "💻" },
+    { id: "ai-data-analytics", label: "Data Analytics", icon: "📊" },
+    { id: "ai-automation", label: "Automation", icon: "🔄" },
+    { id: "ai-chatbots", label: "Chatbots", icon: "💭" },
+    { id: "ai-research-tools", label: "Research Tools", icon: "🔬" },
+    { id: "ai-healthcare", label: "Healthcare", icon: "🏥" },
+    { id: "ai-finance", label: "Finance", icon: "💰" },
+    { id: "ai-education", label: "Education", icon: "🎓" },
+    { id: "ai-marketing", label: "Marketing", icon: "📢" },
+    { id: "ai-productivity", label: "Productivity", icon: "⚡" },
+    { id: "ai-gaming", label: "Gaming", icon: "🎮" },
+    { id: "ai-robotics", label: "Robotics", icon: "🤖" },
+    { id: "ai-infrastructure", label: "Infrastructure", icon: "🏗️" },
   ];
 
   return (
@@ -63,22 +84,43 @@ export default function Home() {
             </div>
 
             {/* Category Filters */}
-            <div className="flex flex-wrap justify-center gap-4 mb-12">
-              {categories.map((category) => (
-                <Button
-                  key={category.id}
-                  variant={selectedCategory === category.id ? "default" : "outline"}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`px-6 py-2 rounded-full transition-colors duration-200 font-medium ${
-                    selectedCategory === category.id
-                      ? "bg-blue-600 text-white hover:bg-blue-700"
-                      : "bg-white border border-gray-300 text-gray-900 hover:bg-gray-50"
-                  }`}
-                >
-                  {category.icon && <span className="mr-2">{category.icon}</span>}
-                  {category.label}
-                </Button>
-              ))}
+            <div className="mb-12">
+              <div className="flex flex-wrap justify-center gap-2 mb-4">
+                {categories.slice(0, 8).map((category) => (
+                  <Button
+                    key={category.id}
+                    variant={selectedCategory === category.id ? "default" : "outline"}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`px-4 py-2 rounded-full transition-colors duration-200 font-medium text-sm ${
+                      selectedCategory === category.id
+                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                        : "bg-white border border-gray-300 text-gray-900 hover:bg-gray-50"
+                    }`}
+                  >
+                    {category.icon && <span className="mr-1">{category.icon}</span>}
+                    {category.label}
+                  </Button>
+                ))}
+              </div>
+              
+              {/* Additional Categories - Collapsed by default */}
+              <div className="flex flex-wrap justify-center gap-2">
+                {categories.slice(8).map((category) => (
+                  <Button
+                    key={category.id}
+                    variant={selectedCategory === category.id ? "default" : "outline"}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`px-3 py-1 rounded-full transition-colors duration-200 font-medium text-xs ${
+                      selectedCategory === category.id
+                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                        : "bg-white border border-gray-300 text-gray-900 hover:bg-gray-50"
+                    }`}
+                  >
+                    {category.icon && <span className="mr-1">{category.icon}</span>}
+                    {category.label}
+                  </Button>
+                ))}
+              </div>
             </div>
 
             {/* Search Results */}

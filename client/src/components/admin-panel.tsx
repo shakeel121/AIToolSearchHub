@@ -69,6 +69,48 @@ export default function AdminPanel() {
         return "bg-green-100 text-green-800";
       case "ai-agents":
         return "bg-yellow-100 text-yellow-800";
+      case "large-language-models":
+        return "bg-purple-100 text-purple-800";
+      case "computer-vision":
+        return "bg-indigo-100 text-indigo-800";
+      case "natural-language-processing":
+        return "bg-cyan-100 text-cyan-800";
+      case "machine-learning-platforms":
+        return "bg-orange-100 text-orange-800";
+      case "ai-art-generators":
+        return "bg-pink-100 text-pink-800";
+      case "ai-video-tools":
+        return "bg-red-100 text-red-800";
+      case "ai-audio-tools":
+        return "bg-emerald-100 text-emerald-800";
+      case "ai-writing-assistants":
+        return "bg-violet-100 text-violet-800";
+      case "ai-code-assistants":
+        return "bg-slate-100 text-slate-800";
+      case "ai-data-analytics":
+        return "bg-teal-100 text-teal-800";
+      case "ai-automation":
+        return "bg-amber-100 text-amber-800";
+      case "ai-chatbots":
+        return "bg-lime-100 text-lime-800";
+      case "ai-research-tools":
+        return "bg-sky-100 text-sky-800";
+      case "ai-healthcare":
+        return "bg-rose-100 text-rose-800";
+      case "ai-finance":
+        return "bg-green-100 text-green-800";
+      case "ai-education":
+        return "bg-blue-100 text-blue-800";
+      case "ai-marketing":
+        return "bg-fuchsia-100 text-fuchsia-800";
+      case "ai-productivity":
+        return "bg-yellow-100 text-yellow-800";
+      case "ai-gaming":
+        return "bg-purple-100 text-purple-800";
+      case "ai-robotics":
+        return "bg-gray-100 text-gray-800";
+      case "ai-infrastructure":
+        return "bg-stone-100 text-stone-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -82,8 +124,50 @@ export default function AdminPanel() {
         return "AI Product";
       case "ai-agents":
         return "AI Agent";
+      case "large-language-models":
+        return "LLM";
+      case "computer-vision":
+        return "Computer Vision";
+      case "natural-language-processing":
+        return "NLP";
+      case "machine-learning-platforms":
+        return "ML Platform";
+      case "ai-art-generators":
+        return "AI Art";
+      case "ai-video-tools":
+        return "AI Video";
+      case "ai-audio-tools":
+        return "AI Audio";
+      case "ai-writing-assistants":
+        return "Writing Assistant";
+      case "ai-code-assistants":
+        return "Code Assistant";
+      case "ai-data-analytics":
+        return "Data Analytics";
+      case "ai-automation":
+        return "Automation";
+      case "ai-chatbots":
+        return "Chatbot";
+      case "ai-research-tools":
+        return "Research Tool";
+      case "ai-healthcare":
+        return "Healthcare";
+      case "ai-finance":
+        return "Finance";
+      case "ai-education":
+        return "Education";
+      case "ai-marketing":
+        return "Marketing";
+      case "ai-productivity":
+        return "Productivity";
+      case "ai-gaming":
+        return "Gaming";
+      case "ai-robotics":
+        return "Robotics";
+      case "ai-infrastructure":
+        return "Infrastructure";
       default:
-        return category;
+        return category.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     }
   };
 

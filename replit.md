@@ -84,7 +84,23 @@ Build commands:
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+Recent Changes:
+- July 08, 2025: Initial setup with basic AI search engine functionality
+- July 08, 2025: Expanded categories from 3 to 24 comprehensive AI categories including:
+  - Core AI categories: Large Language Models, Computer Vision, NLP, ML Platforms
+  - Creative AI: Art Generators, Video Tools, Audio Tools
+  - Professional AI: Writing Assistants, Code Assistants, Data Analytics
+  - Industry-specific: Healthcare, Finance, Education, Marketing
+  - Functional: Automation, Chatbots, Research Tools, Productivity
+  - Emerging: Gaming, Robotics, Infrastructure
+- Enhanced category filtering with improved visual layout and color coding
+- Updated submission form with all new categories
+- Applied database schema changes to support expanded categorization
+
 ## Changelog
 
 Changelog:
 - July 08, 2025. Initial setup
+- July 08, 2025. Added 21 additional AI categories for comprehensive coverage
