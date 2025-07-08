@@ -15,7 +15,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { CheckCircle, XCircle, Star, DollarSign, Eye, Trash2, Edit, TrendingUp, Users, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import type { Submission } from "@shared/schema";
+import type { Submission, Advertisement } from "@shared/schema";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
@@ -33,11 +33,26 @@ interface EditSubmissionFormData {
   affiliateUrl: string;
 }
 
+interface AdvertisementFormData {
+  title: string;
+  description: string;
+  imageUrl: string;
+  targetUrl: string;
+  placement: string;
+  isActive: boolean;
+  budget: string;
+  costPerClick: string;
+  startDate: string;
+  endDate: string;
+}
+
 export default function AdminPanel() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
   const [editingSubmission, setEditingSubmission] = useState<Submission | null>(null);
+  const [editingAdvertisement, setEditingAdvertisement] = useState<Advertisement | null>(null);
+  const [showAddAdDialog, setShowAddAdDialog] = useState(false);
   const [formData, setFormData] = useState<EditSubmissionFormData>({
     name: "",
     description: "",
@@ -50,6 +65,18 @@ export default function AdminPanel() {
     sponsorshipEndDate: "",
     commissionRate: "0.00",
     affiliateUrl: ""
+  });
+  const [adFormData, setAdFormData] = useState<AdvertisementFormData>({
+    title: "",
+    description: "",
+    imageUrl: "",
+    targetUrl: "",
+    placement: "",
+    isActive: true,
+    budget: "0.00",
+    costPerClick: "0.00",
+    startDate: "",
+    endDate: ""
   });
 
   // Queries
@@ -71,6 +98,11 @@ export default function AdminPanel() {
   const { data: analytics } = useQuery({
     queryKey: ["/api/admin/analytics"],
     queryFn: () => apiRequest("GET", "/api/admin/analytics").then(res => res.json())
+  });
+
+  const { data: advertisements } = useQuery({
+    queryKey: ["/api/admin/advertisements"],
+    queryFn: () => apiRequest("GET", "/api/admin/advertisements").then(res => res.json())
   });
 
   // Mutations
@@ -132,6 +164,36 @@ export default function AdminPanel() {
     }
   });
 
+  const createAdMutation = useMutation({
+    mutationFn: (data: AdvertisementFormData) =>
+      apiRequest("POST", "/api/admin/advertisements", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/advertisements"] });
+      setShowAddAdDialog(false);
+      resetAdForm();
+      toast({ title: "Advertisement created successfully" });
+    }
+  });
+
+  const updateAdMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: AdvertisementFormData }) =>
+      apiRequest("PUT", `/api/admin/advertisements/${id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/advertisements"] });
+      setEditingAdvertisement(null);
+      resetAdForm();
+      toast({ title: "Advertisement updated successfully" });
+    }
+  });
+
+  const deleteAdMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/admin/advertisements/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/advertisements"] });
+      toast({ title: "Advertisement deleted successfully" });
+    }
+  });
+
   const openEditDialog = (submission: Submission) => {
     setEditingSubmission(submission);
     setFormData({
@@ -152,6 +214,45 @@ export default function AdminPanel() {
   const handleUpdate = () => {
     if (!editingSubmission) return;
     updateMutation.mutate({ id: editingSubmission.id, updates: formData });
+  };
+
+  const resetAdForm = () => {
+    setAdFormData({
+      title: "",
+      description: "",
+      imageUrl: "",
+      targetUrl: "",
+      placement: "",
+      isActive: true,
+      budget: "0.00",
+      costPerClick: "0.00",
+      startDate: "",
+      endDate: ""
+    });
+  };
+
+  const openEditAdDialog = (advertisement: Advertisement) => {
+    setEditingAdvertisement(advertisement);
+    setAdFormData({
+      title: advertisement.title,
+      description: advertisement.description,
+      imageUrl: advertisement.imageUrl || "",
+      targetUrl: advertisement.targetUrl,
+      placement: advertisement.placement,
+      isActive: advertisement.isActive,
+      budget: advertisement.budget || "0.00",
+      costPerClick: advertisement.costPerClick || "0.00",
+      startDate: advertisement.startDate ? new Date(advertisement.startDate).toISOString().split('T')[0] : "",
+      endDate: advertisement.endDate ? new Date(advertisement.endDate).toISOString().split('T')[0] : ""
+    });
+  };
+
+  const handleAdSubmit = () => {
+    if (editingAdvertisement) {
+      updateAdMutation.mutate({ id: editingAdvertisement.id, data: adFormData });
+    } else {
+      createAdMutation.mutate(adFormData);
+    }
   };
 
   const categoryData = analytics?.topPerformers
@@ -525,108 +626,72 @@ export default function AdminPanel() {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-semibold">Active Advertisements</h3>
-                  <Button>
+                  <Button onClick={() => setShowAddAdDialog(true)}>
                     <Plus className="h-4 w-4 mr-2" />
                     Add Advertisement
                   </Button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <Card className="border-green-200">
-                    <CardHeader className="pb-3">
-                      <div className="flex justify-between items-start">
-                        <Badge variant="outline" className="bg-green-50 text-green-700">
-                          Active
-                        </Badge>
-                        <div className="flex space-x-1">
-                          <Button size="sm" variant="outline">
-                            <Edit className="h-3 w-3" />
-                          </Button>
-                          <Button size="sm" variant="outline">
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
+                  {advertisements?.map((ad: Advertisement) => (
+                    <Card key={ad.id} className={`border-${ad.isActive ? 'green' : 'gray'}-200`}>
+                      <CardHeader className="pb-3">
+                        <div className="flex justify-between items-start">
+                          <Badge variant="outline" className={`${ad.isActive ? 'bg-green-50 text-green-700' : 'bg-gray-50 text-gray-700'}`}>
+                            {ad.isActive ? 'Active' : 'Inactive'}
+                          </Badge>
+                          <div className="flex space-x-1">
+                            <Button size="sm" variant="outline" onClick={() => openEditAdDialog(ad)}>
+                              <Edit className="h-3 w-3" />
+                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button size="sm" variant="outline">
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Delete Advertisement</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Are you sure you want to delete "{ad.title}"? This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction 
+                                    onClick={() => deleteAdMutation.mutate(ad.id)}
+                                    className="bg-red-600 hover:bg-red-700"
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
                         </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div>
-                        <h4 className="font-medium">AI Tools Premium</h4>
-                        <p className="text-sm text-gray-600">Header placement</p>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span>Budget: $1,000</span>
-                        <span>CPC: $2.50</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span><Eye className="h-3 w-3 inline mr-1" />1,234 views</span>
-                        <span><DollarSign className="h-3 w-3 inline mr-1" />56 clicks</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="border-blue-200">
-                    <CardHeader className="pb-3">
-                      <div className="flex justify-between items-start">
-                        <Badge variant="outline" className="bg-blue-50 text-blue-700">
-                          Active
-                        </Badge>
-                        <div className="flex space-x-1">
-                          <Button size="sm" variant="outline">
-                            <Edit className="h-3 w-3" />
-                          </Button>
-                          <Button size="sm" variant="outline">
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div>
+                          <h4 className="font-medium">{ad.title}</h4>
+                          <p className="text-sm text-gray-600">{ad.placement} placement</p>
                         </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div>
-                        <h4 className="font-medium">AI Courses</h4>
-                        <p className="text-sm text-gray-600">Sidebar placement</p>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span>Budget: $500</span>
-                        <span>CPC: $1.75</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span><Eye className="h-3 w-3 inline mr-1" />892 views</span>
-                        <span><DollarSign className="h-3 w-3 inline mr-1" />42 clicks</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="border-purple-200">
-                    <CardHeader className="pb-3">
-                      <div className="flex justify-between items-start">
-                        <Badge variant="outline" className="bg-purple-50 text-purple-700">
-                          Active
-                        </Badge>
-                        <div className="flex space-x-1">
-                          <Button size="sm" variant="outline">
-                            <Edit className="h-3 w-3" />
-                          </Button>
-                          <Button size="sm" variant="outline">
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
+                        <div className="flex justify-between text-sm">
+                          <span>Budget: ${ad.budget}</span>
+                          <span>CPC: ${ad.costPerClick}</span>
                         </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div>
-                        <h4 className="font-medium">Enterprise Solutions</h4>
-                        <p className="text-sm text-gray-600">Between results</p>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span>Budget: $2,000</span>
-                        <span>CPC: $5.00</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span><Eye className="h-3 w-3 inline mr-1" />567 views</span>
-                        <span><DollarSign className="h-3 w-3 inline mr-1" />23 clicks</span>
-                      </div>
-                    </CardContent>
-                  </Card>
+                        <div className="flex justify-between text-sm">
+                          <span><Eye className="h-3 w-3 inline mr-1" />{ad.impressionCount || 0} views</span>
+                          <span><DollarSign className="h-3 w-3 inline mr-1" />{ad.clickCount || 0} clicks</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                  {!advertisements?.length && (
+                    <div className="col-span-full text-center py-8">
+                      <p className="text-gray-500">No advertisements found</p>
+                    </div>
+                  )}
                 </div>
 
                 <Card className="mt-6">
@@ -844,6 +909,260 @@ export default function AdminPanel() {
             </Button>
             <Button onClick={handleUpdate} disabled={updateMutation.isPending}>
               Update Submission
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Advertisement Dialog */}
+      <Dialog open={showAddAdDialog} onOpenChange={setShowAddAdDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Add New Advertisement</DialogTitle>
+            <DialogDescription>
+              Create a new advertisement to display on the platform.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="ad-title">Title</Label>
+              <Input
+                id="ad-title"
+                value={adFormData.title}
+                onChange={(e) => setAdFormData({ ...adFormData, title: e.target.value })}
+                placeholder="Enter advertisement title"
+              />
+            </div>
+            <div>
+              <Label htmlFor="ad-description">Description</Label>
+              <Textarea
+                id="ad-description"
+                value={adFormData.description}
+                onChange={(e) => setAdFormData({ ...adFormData, description: e.target.value })}
+                placeholder="Enter advertisement description"
+                rows={3}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="ad-imageUrl">Image URL</Label>
+                <Input
+                  id="ad-imageUrl"
+                  value={adFormData.imageUrl}
+                  onChange={(e) => setAdFormData({ ...adFormData, imageUrl: e.target.value })}
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+              <div>
+                <Label htmlFor="ad-targetUrl">Target URL</Label>
+                <Input
+                  id="ad-targetUrl"
+                  value={adFormData.targetUrl}
+                  onChange={(e) => setAdFormData({ ...adFormData, targetUrl: e.target.value })}
+                  placeholder="https://example.com"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="ad-placement">Placement</Label>
+              <Select value={adFormData.placement} onValueChange={(value) => setAdFormData({ ...adFormData, placement: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select placement" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="header">Header</SelectItem>
+                  <SelectItem value="sidebar">Sidebar</SelectItem>
+                  <SelectItem value="footer">Footer</SelectItem>
+                  <SelectItem value="between-results">Between Results</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="ad-budget">Budget ($)</Label>
+                <Input
+                  id="ad-budget"
+                  type="number"
+                  step="0.01"
+                  value={adFormData.budget}
+                  onChange={(e) => setAdFormData({ ...adFormData, budget: e.target.value })}
+                  placeholder="0.00"
+                />
+              </div>
+              <div>
+                <Label htmlFor="ad-costPerClick">Cost Per Click ($)</Label>
+                <Input
+                  id="ad-costPerClick"
+                  type="number"
+                  step="0.01"
+                  value={adFormData.costPerClick}
+                  onChange={(e) => setAdFormData({ ...adFormData, costPerClick: e.target.value })}
+                  placeholder="0.00"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="ad-startDate">Start Date</Label>
+                <Input
+                  id="ad-startDate"
+                  type="date"
+                  value={adFormData.startDate}
+                  onChange={(e) => setAdFormData({ ...adFormData, startDate: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="ad-endDate">End Date</Label>
+                <Input
+                  id="ad-endDate"
+                  type="date"
+                  value={adFormData.endDate}
+                  onChange={(e) => setAdFormData({ ...adFormData, endDate: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="ad-isActive"
+                checked={adFormData.isActive}
+                onCheckedChange={(checked) => setAdFormData({ ...adFormData, isActive: checked })}
+              />
+              <Label htmlFor="ad-isActive">Active</Label>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddAdDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAdSubmit} disabled={createAdMutation.isPending}>
+              Create Advertisement
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Advertisement Dialog */}
+      <Dialog open={!!editingAdvertisement} onOpenChange={() => setEditingAdvertisement(null)}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Edit Advertisement</DialogTitle>
+            <DialogDescription>
+              Update the advertisement details.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="edit-ad-title">Title</Label>
+              <Input
+                id="edit-ad-title"
+                value={adFormData.title}
+                onChange={(e) => setAdFormData({ ...adFormData, title: e.target.value })}
+                placeholder="Enter advertisement title"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-ad-description">Description</Label>
+              <Textarea
+                id="edit-ad-description"
+                value={adFormData.description}
+                onChange={(e) => setAdFormData({ ...adFormData, description: e.target.value })}
+                placeholder="Enter advertisement description"
+                rows={3}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-ad-imageUrl">Image URL</Label>
+                <Input
+                  id="edit-ad-imageUrl"
+                  value={adFormData.imageUrl}
+                  onChange={(e) => setAdFormData({ ...adFormData, imageUrl: e.target.value })}
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-ad-targetUrl">Target URL</Label>
+                <Input
+                  id="edit-ad-targetUrl"
+                  value={adFormData.targetUrl}
+                  onChange={(e) => setAdFormData({ ...adFormData, targetUrl: e.target.value })}
+                  placeholder="https://example.com"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="edit-ad-placement">Placement</Label>
+              <Select value={adFormData.placement} onValueChange={(value) => setAdFormData({ ...adFormData, placement: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select placement" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="header">Header</SelectItem>
+                  <SelectItem value="sidebar">Sidebar</SelectItem>
+                  <SelectItem value="footer">Footer</SelectItem>
+                  <SelectItem value="between-results">Between Results</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-ad-budget">Budget ($)</Label>
+                <Input
+                  id="edit-ad-budget"
+                  type="number"
+                  step="0.01"
+                  value={adFormData.budget}
+                  onChange={(e) => setAdFormData({ ...adFormData, budget: e.target.value })}
+                  placeholder="0.00"
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-ad-costPerClick">Cost Per Click ($)</Label>
+                <Input
+                  id="edit-ad-costPerClick"
+                  type="number"
+                  step="0.01"
+                  value={adFormData.costPerClick}
+                  onChange={(e) => setAdFormData({ ...adFormData, costPerClick: e.target.value })}
+                  placeholder="0.00"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-ad-startDate">Start Date</Label>
+                <Input
+                  id="edit-ad-startDate"
+                  type="date"
+                  value={adFormData.startDate}
+                  onChange={(e) => setAdFormData({ ...adFormData, startDate: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-ad-endDate">End Date</Label>
+                <Input
+                  id="edit-ad-endDate"
+                  type="date"
+                  value={adFormData.endDate}
+                  onChange={(e) => setAdFormData({ ...adFormData, endDate: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="edit-ad-isActive"
+                checked={adFormData.isActive}
+                onCheckedChange={(checked) => setAdFormData({ ...adFormData, isActive: checked })}
+              />
+              <Label htmlFor="edit-ad-isActive">Active</Label>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingAdvertisement(null)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAdSubmit} disabled={updateAdMutation.isPending}>
+              Update Advertisement
             </Button>
           </DialogFooter>
         </DialogContent>
