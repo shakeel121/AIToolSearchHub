@@ -19,7 +19,7 @@ export default function SearchResults({ query, category }: SearchResultsProps) {
     queryKey: ["/api/search", query, category, currentPage],
     queryFn: async () => {
       const params = new URLSearchParams({
-        q: query,
+        q: query || "",
         page: currentPage.toString(),
         limit: limit.toString(),
         ...(category && { category }),
@@ -29,13 +29,13 @@ export default function SearchResults({ query, category }: SearchResultsProps) {
       if (!response.ok) throw new Error("Search failed");
       return response.json();
     },
-    enabled: !!query,
+    enabled: !!query || !!category,
   });
 
-  if (!query) {
+  if (!query && !category) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Enter a search term to find AI tools, products, and agents</p>
+        <p className="text-gray-500">Enter a search term or select a category to find AI tools, products, and agents</p>
       </div>
     );
   }

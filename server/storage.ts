@@ -94,21 +94,30 @@ export class DatabaseStorage implements IStorage {
   }
 
   async searchSubmissions(query: string, category?: string, limit = 10, offset = 0): Promise<{ submissions: Submission[]; total: number }> {
+    // Build where conditions
+    const conditions = [eq(submissions.status, "approved")];
+    
+    // Add text search conditions if query is provided
+    if (query && query.trim()) {
+      conditions.push(
+        or(
+          ilike(submissions.name, `%${query}%`),
+          ilike(submissions.shortDescription, `%${query}%`),
+          ilike(submissions.detailedDescription, `%${query}%`),
+          sql`array_to_string(${submissions.tags}, ' ') ILIKE ${`%${query}%`}`
+        )!
+      );
+    }
+    
+    // Add category filter if provided
+    if (category) {
+      conditions.push(eq(submissions.category, category));
+    }
+
     const baseQuery = db
       .select()
       .from(submissions)
-      .where(
-        and(
-          eq(submissions.status, "approved"),
-          or(
-            ilike(submissions.name, `%${query}%`),
-            ilike(submissions.shortDescription, `%${query}%`),
-            ilike(submissions.detailedDescription, `%${query}%`),
-            sql`array_to_string(${submissions.tags}, ' ') ILIKE ${`%${query}%`}`
-          ),
-          category ? eq(submissions.category, category) : undefined
-        )
-      );
+      .where(and(...conditions));
 
     const [results, countResult] = await Promise.all([
       baseQuery
@@ -118,18 +127,7 @@ export class DatabaseStorage implements IStorage {
       db
         .select({ count: sql<number>`count(*)` })
         .from(submissions)
-        .where(
-          and(
-            eq(submissions.status, "approved"),
-            or(
-              ilike(submissions.name, `%${query}%`),
-              ilike(submissions.shortDescription, `%${query}%`),
-              ilike(submissions.detailedDescription, `%${query}%`),
-              sql`array_to_string(${submissions.tags}, ' ') ILIKE ${`%${query}%`}`
-            ),
-            category ? eq(submissions.category, category) : undefined
-          )
-        )
+        .where(and(...conditions))
     ]);
 
     return {
