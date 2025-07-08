@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { CheckCircle, XCircle, Star, DollarSign, Eye, Trash2, Edit, TrendingUp, Users, Plus } from "lucide-react";
+import { CheckCircle, XCircle, Star, DollarSign, Eye, Trash2, Edit, TrendingUp, Users, Plus, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Submission, Advertisement } from "@shared/schema";
 
@@ -194,6 +194,25 @@ export default function AdminPanel() {
     }
   });
 
+  const refreshDataMutation = useMutation({
+    mutationFn: () => apiRequest("POST", "/api/admin/refresh-data"),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/submissions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      toast({ 
+        title: "Data refresh completed", 
+        description: data.message 
+      });
+    },
+    onError: (error) => {
+      toast({ 
+        title: "Data refresh failed", 
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
+
   const openEditDialog = (submission: Submission) => {
     setEditingSubmission(submission);
     setFormData({
@@ -278,14 +297,35 @@ export default function AdminPanel() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="pending">Pending</TabsTrigger>
-          <TabsTrigger value="submissions">All Submissions</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="monetization">Monetization</TabsTrigger>
-          <TabsTrigger value="advertisements">Advertisements</TabsTrigger>
-        </TabsList>
+        <div className="flex justify-between items-center">
+          <TabsList className="grid w-full max-w-2xl grid-cols-6">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="pending">Pending</TabsTrigger>
+            <TabsTrigger value="submissions">All Submissions</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="monetization">Monetization</TabsTrigger>
+            <TabsTrigger value="advertisements">Advertisements</TabsTrigger>
+          </TabsList>
+          
+          <Button 
+            onClick={() => refreshDataMutation.mutate()}
+            disabled={refreshDataMutation.isPending}
+            variant="outline"
+            className="ml-4"
+          >
+            {refreshDataMutation.isPending ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div>
+                Refreshing...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh Data
+              </>
+            )}
+          </Button>
+        </div>
 
         <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">

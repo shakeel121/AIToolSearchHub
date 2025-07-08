@@ -6,6 +6,7 @@ import { z } from "zod";
 import { seedDatabase } from "./seed";
 import { seedComprehensiveData } from "./comprehensive-seed";
 import { seedEnhancedData } from "./enhanced-seed";
+import { aiToolFetcher } from "./data-fetcher";
 import { nanoid } from "nanoid";
 
 // Authentication middleware
@@ -25,13 +26,32 @@ function requireAuth(req: any, res: any, next: any) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Seed database on startup
+  // Check if we need to seed with real-time data
   try {
-    await seedDatabase();
-    await seedComprehensiveData();
-    await seedEnhancedData();
+    const existingSubmissions = await storage.getAllSubmissions(1, 0);
+    if (existingSubmissions.submissions.length === 0) {
+      console.log('📡 No existing data found, fetching real-time AI tools...');
+      try {
+        const realTimeData = await aiToolFetcher.fetchAllRealTimeData();
+        
+        // Insert real-time data
+        for (const tool of realTimeData) {
+          await storage.createSubmission(tool);
+        }
+        
+        console.log(`✅ Successfully populated database with ${realTimeData.length} real-time AI tools`);
+      } catch (error) {
+        console.error('❌ Error fetching real-time data, falling back to seed data:', error);
+        // Fallback to seed data if real-time fetch fails
+        await seedDatabase();
+        await seedComprehensiveData();
+        await seedEnhancedData();
+      }
+    } else {
+      console.log('📊 Database already contains data, skipping real-time fetch');
+    }
   } catch (error) {
-    console.error("Database seeding failed:", error);
+    console.error("Database initialization failed:", error);
   }
   // Search submissions
   app.get("/api/search", async (req, res) => {
@@ -402,6 +422,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Advertisement deletion error:", error);
       res.status(500).json({ error: "Failed to delete advertisement" });
+    }
+  });
+
+  // Refresh real-time data endpoint
+  app.post("/api/admin/refresh-data", requireAuth, async (req, res) => {
+    try {
+      console.log('🔄 Admin requested data refresh...');
+      const realTimeData = await aiToolFetcher.fetchAllRealTimeData();
+      
+      let newToolsCount = 0;
+      // Insert only new tools (check by name)
+      for (const tool of realTimeData) {
+        try {
+          const existingSubmissions = await storage.searchSubmissions(tool.name, undefined, 1, 0);
+          if (existingSubmissions.submissions.length === 0) {
+            await storage.createSubmission(tool);
+            newToolsCount++;
+          }
+        } catch (error) {
+          console.error(`Error inserting tool ${tool.name}:`, error);
+        }
+      }
+      
+      console.log(`✅ Data refresh completed: ${newToolsCount} new tools added`);
+      res.json({ 
+        success: true, 
+        message: `Successfully added ${newToolsCount} new AI tools from real-time sources`,
+        newToolsCount 
+      });
+    } catch (error) {
+      console.error('❌ Error refreshing data:', error);
+      res.status(500).json({ 
+        error: "Failed to refresh data", 
+        details: error.message 
+      });
     }
   });
 
