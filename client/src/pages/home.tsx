@@ -243,9 +243,9 @@ export default function Home() {
                     </div>
                     <CardTitle className="text-lg">{submission.name}</CardTitle>
                     <CardDescription className="text-sm">
-                      {submission.description.length > 100 
+                      {submission.description && submission.description.length > 100 
                         ? submission.description.substring(0, 100) + "..." 
-                        : submission.description}
+                        : submission.description || ''}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -300,9 +300,9 @@ export default function Home() {
                     </div>
                     <CardTitle className="text-lg">{submission.name}</CardTitle>
                     <CardDescription className="text-sm">
-                      {submission.description.length > 100 
+                      {submission.description && submission.description.length > 100 
                         ? submission.description.substring(0, 100) + "..." 
-                        : submission.description}
+                        : submission.description || ''}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
