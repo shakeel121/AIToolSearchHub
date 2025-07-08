@@ -91,6 +91,18 @@ export class DatabaseStorage implements IStorage {
 
   // Submission methods
   async createSubmission(submission: InsertSubmission): Promise<Submission> {
+    // Check if submission with same name already exists (case-insensitive)
+    const existing = await db
+      .select()
+      .from(submissions)
+      .where(sql`LOWER(TRIM(${submissions.name})) = LOWER(TRIM(${submission.name}))`)
+      .limit(1);
+    
+    if (existing.length > 0) {
+      console.log(`⚠️  Skipping duplicate submission: ${submission.name}`);
+      return existing[0];
+    }
+    
     const [created] = await db
       .insert(submissions)
       .values({
