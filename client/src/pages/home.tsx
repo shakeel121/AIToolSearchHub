@@ -237,7 +237,7 @@ export default function Home() {
                       {submission.rating && (
                         <div className="flex items-center text-sm">
                           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 mr-1" />
-                          <span>{submission.rating.toFixed(1)}</span>
+                          <span>{parseFloat(submission.rating || "0").toFixed(1)}</span>
                         </div>
                       )}
                     </div>
@@ -294,7 +294,7 @@ export default function Home() {
                       {submission.rating && (
                         <div className="flex items-center text-sm">
                           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 mr-1" />
-                          <span>{submission.rating.toFixed(1)}</span>
+                          <span>{parseFloat(submission.rating || "0").toFixed(1)}</span>
                         </div>
                       )}
                     </div>

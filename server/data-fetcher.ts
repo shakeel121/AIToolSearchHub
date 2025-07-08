@@ -388,7 +388,91 @@ export class AIToolDataFetcher {
         // Emerging & Specialized
         { name: "LangChain", description: "Framework for building LLM applications", website: "https://langchain.com", category: "ai-infrastructure", pricingModel: "open-source", rating: "4.5", reviewCount: "4800" },
         { name: "Weights & Biases", description: "MLOps platform for model tracking", website: "https://wandb.ai", category: "machine-learning-platforms", pricingModel: "freemium", rating: "4.6", reviewCount: "2600" },
-        { name: "Hugging Face Spaces", description: "Platform for hosting ML demos and apps", website: "https://huggingface.co/spaces", category: "ai-infrastructure", pricingModel: "freemium", rating: "4.4", reviewCount: "1900" }
+        { name: "Hugging Face Spaces", description: "Platform for hosting ML demos and apps", website: "https://huggingface.co/spaces", category: "ai-infrastructure", pricingModel: "freemium", rating: "4.4", reviewCount: "1900" },
+        
+        // Additional Video & Content Creation
+        { name: "Descript", description: "AI-powered video and podcast editing with transcription", website: "https://descript.com", category: "ai-video-tools", pricingModel: "freemium", rating: "4.3", reviewCount: "2100" },
+        { name: "Pictory", description: "AI video creation from long-form content", website: "https://pictory.ai", category: "ai-video-tools", pricingModel: "subscription", rating: "4.2", reviewCount: "1500" },
+        { name: "InVideo AI", description: "AI video generator with templates and voiceovers", website: "https://invideo.io", category: "ai-video-tools", pricingModel: "freemium", rating: "4.1", reviewCount: "3200" },
+        { name: "Fliki", description: "AI video creation with realistic voices", website: "https://fliki.ai", category: "ai-video-tools", pricingModel: "freemium", rating: "4.0", reviewCount: "1800" },
+        
+        // Advanced Writing & Content
+        { name: "Claude Pro", description: "Professional AI writing assistant by Anthropic", website: "https://claude.ai/pro", category: "ai-writing-assistants", pricingModel: "subscription", rating: "4.7", reviewCount: "2800" },
+        { name: "Writesonic", description: "AI writing platform for marketing content", website: "https://writesonic.com", category: "ai-writing-assistants", pricingModel: "freemium", rating: "4.3", reviewCount: "4200" },
+        { name: "ContentBot", description: "AI content generator for blogs and ads", website: "https://contentbot.ai", category: "ai-writing-assistants", pricingModel: "subscription", rating: "4.1", reviewCount: "1900" },
+        { name: "Rytr", description: "AI writing assistant for various content types", website: "https://rytr.me", category: "ai-writing-assistants", pricingModel: "freemium", rating: "4.0", reviewCount: "3500" },
+        
+        // Image & Art Generation Expansion
+        { name: "Adobe Firefly", description: "AI art generator integrated into Adobe Creative Suite", website: "https://firefly.adobe.com", category: "ai-art-generators", pricingModel: "freemium", rating: "4.4", reviewCount: "3800" },
+        { name: "Ideogram", description: "AI image generator with text rendering capabilities", website: "https://ideogram.ai", category: "ai-art-generators", pricingModel: "freemium", rating: "4.2", reviewCount: "1600" },
+        { name: "Leonardo AI", description: "AI art platform for game assets and creative content", website: "https://leonardo.ai", category: "ai-art-generators", pricingModel: "freemium", rating: "4.3", reviewCount: "2200" },
+        { name: "Artbreeder", description: "Collaborative AI art creation platform", website: "https://artbreeder.com", category: "ai-art-generators", pricingModel: "freemium", rating: "4.0", reviewCount: "1400" },
+        
+        // Code Development Expansion
+        { name: "CodeT5", description: "AI code generation and understanding model", website: "https://huggingface.co/Salesforce/codet5-large", category: "ai-code-assistants", pricingModel: "free", rating: "4.1", reviewCount: "850" },
+        { name: "Blackbox AI", description: "AI code completion and search", website: "https://blackbox.ai", category: "ai-code-assistants", pricingModel: "freemium", rating: "3.9", reviewCount: "1200" },
+        { name: "Sourcegraph Cody", description: "AI coding assistant with codebase context", website: "https://sourcegraph.com/cody", category: "ai-code-assistants", pricingModel: "freemium", rating: "4.2", reviewCount: "980" },
+        { name: "Codex by OpenAI", description: "AI that translates natural language to code", website: "https://openai.com/blog/openai-codex", category: "ai-code-assistants", pricingModel: "api", rating: "4.4", reviewCount: "1500" },
+        
+        // Healthcare & Science
+        { name: "PathAI", description: "AI pathology platform for disease diagnosis", website: "https://pathai.com", category: "healthcare", pricingModel: "enterprise", rating: "4.3", reviewCount: "320" },
+        { name: "Butterfly Network", description: "AI-powered portable ultrasound", website: "https://butterflynetwork.com", category: "healthcare", pricingModel: "subscription", rating: "4.1", reviewCount: "450" },
+        { name: "DeepMind AlphaFold", description: "AI for protein structure prediction", website: "https://deepmind.com/research/alphafold", category: "healthcare", pricingModel: "free", rating: "4.9", reviewCount: "780" },
+        { name: "Tempus", description: "AI platform for precision medicine", website: "https://tempus.com", category: "healthcare", pricingModel: "enterprise", rating: "4.2", reviewCount: "290" },
+        
+        // Finance & Business Intelligence
+        { name: "Kensho", description: "AI analytics for financial markets", website: "https://kensho.com", category: "finance", pricingModel: "enterprise", rating: "4.4", reviewCount: "180" },
+        { name: "Palantir Foundry", description: "AI-powered data integration platform", website: "https://palantir.com/foundry", category: "data-analytics", pricingModel: "enterprise", rating: "4.1", reviewCount: "520" },
+        { name: "ZestFinance", description: "AI underwriting for credit decisions", website: "https://zest.ai", category: "finance", pricingModel: "enterprise", rating: "4.0", reviewCount: "150" },
+        { name: "Robo-advisor Betterment", description: "AI investment management platform", website: "https://betterment.com", category: "finance", pricingModel: "subscription", rating: "4.2", reviewCount: "2800" },
+        
+        // Education & Learning
+        { name: "Coursera AI", description: "AI-powered personalized learning platform", website: "https://coursera.org", category: "education", pricingModel: "freemium", rating: "4.3", reviewCount: "5200" },
+        { name: "Khan Academy AI", description: "AI tutoring for personalized education", website: "https://khanacademy.org", category: "education", pricingModel: "free", rating: "4.4", reviewCount: "8900" },
+        { name: "Duolingo AI", description: "AI language learning with adaptive lessons", website: "https://duolingo.com", category: "education", pricingModel: "freemium", rating: "4.5", reviewCount: "12000" },
+        { name: "Squirrel AI", description: "AI adaptive learning system", website: "https://squirrelai.com", category: "education", pricingModel: "subscription", rating: "4.1", reviewCount: "1200" },
+        
+        // Marketing & SEO
+        { name: "MarketMuse", description: "AI content planning and optimization", website: "https://marketmuse.com", category: "seo", pricingModel: "subscription", rating: "4.2", reviewCount: "980" },
+        { name: "Surfer SEO", description: "AI-powered SEO content optimization", website: "https://surferseo.com", category: "seo", pricingModel: "subscription", rating: "4.4", reviewCount: "1800" },
+        { name: "Clearscope", description: "AI content optimization for search rankings", website: "https://clearscope.io", category: "seo", pricingModel: "subscription", rating: "4.3", reviewCount: "750" },
+        { name: "Frase", description: "AI content optimization and research", website: "https://frase.io", category: "seo", pricingModel: "subscription", rating: "4.1", reviewCount: "1200" },
+        
+        // Customer Service & Support
+        { name: "Zendesk AI", description: "AI-powered customer service platform", website: "https://zendesk.com/ai", category: "customer-service", pricingModel: "subscription", rating: "4.2", reviewCount: "3200" },
+        { name: "LivePerson AI", description: "AI chatbot for customer engagement", website: "https://liveperson.com", category: "customer-service", pricingModel: "enterprise", rating: "4.0", reviewCount: "1500" },
+        { name: "Ada AI", description: "AI customer service automation", website: "https://ada.cx", category: "customer-service", pricingModel: "subscription", rating: "4.1", reviewCount: "890" },
+        { name: "Drift AI", description: "AI conversational marketing platform", website: "https://drift.com", category: "customer-service", pricingModel: "subscription", rating: "4.3", reviewCount: "1600" },
+        
+        // Voice & Speech Technology
+        { name: "Speechify", description: "AI text-to-speech reading assistant", website: "https://speechify.com", category: "ai-audio-tools", pricingModel: "freemium", rating: "4.4", reviewCount: "3200" },
+        { name: "Descript Overdub", description: "AI voice cloning for content creation", website: "https://descript.com/overdub", category: "ai-audio-tools", pricingModel: "subscription", rating: "4.2", reviewCount: "1100" },
+        { name: "Resemble AI", description: "AI voice synthesis and cloning", website: "https://resemble.ai", category: "ai-audio-tools", pricingModel: "api", rating: "4.3", reviewCount: "650" },
+        { name: "Wellsaid Labs", description: "AI voice generation for enterprise", website: "https://wellsaidlabs.com", category: "ai-audio-tools", pricingModel: "subscription", rating: "4.1", reviewCount: "420" },
+        
+        // Robotics & Automation
+        { name: "Boston Dynamics AI", description: "Advanced robotics with AI capabilities", website: "https://bostondynamics.com", category: "robotics", pricingModel: "enterprise", rating: "4.6", reviewCount: "350" },
+        { name: "UiPath AI", description: "AI-powered robotic process automation", website: "https://uipath.com", category: "ai-automation", pricingModel: "enterprise", rating: "4.3", reviewCount: "2100" },
+        { name: "Automation Anywhere", description: "AI automation platform for enterprises", website: "https://automationanywhere.com", category: "ai-automation", pricingModel: "enterprise", rating: "4.1", reviewCount: "1800" },
+        { name: "Blue Prism AI", description: "Intelligent automation platform", website: "https://blueprism.com", category: "ai-automation", pricingModel: "enterprise", rating: "4.0", reviewCount: "920" },
+        
+        // Research & Academic
+        { name: "Semantic Scholar", description: "AI-powered academic search engine", website: "https://semanticscholar.org", category: "ai-research-tools", pricingModel: "free", rating: "4.5", reviewCount: "2800" },
+        { name: "Elicit", description: "AI research assistant for literature review", website: "https://elicit.org", category: "ai-research-tools", pricingModel: "freemium", rating: "4.3", reviewCount: "1200" },
+        { name: "ResearchGate AI", description: "AI-enhanced scientific collaboration", website: "https://researchgate.net", category: "ai-research-tools", pricingModel: "freemium", rating: "4.1", reviewCount: "3500" },
+        { name: "Scholarcy", description: "AI research paper summarization", website: "https://scholarcy.com", category: "ai-research-tools", pricingModel: "subscription", rating: "4.2", reviewCount: "850" },
+        
+        // Gaming & Entertainment
+        { name: "NVIDIA Omniverse", description: "AI-powered 3D collaboration platform", website: "https://nvidia.com/omniverse", category: "gaming", pricingModel: "freemium", rating: "4.4", reviewCount: "1100" },
+        { name: "Unity ML-Agents", description: "AI training platform for games", website: "https://unity.com/ml-agents", category: "gaming", pricingModel: "free", rating: "4.2", reviewCount: "980" },
+        { name: "Promethean AI", description: "AI assistant for digital artists", website: "https://prometheanai.com", category: "gaming", pricingModel: "subscription", rating: "4.1", reviewCount: "650" },
+        { name: "Scenario AI", description: "AI game asset generation", website: "https://scenario.gg", category: "gaming", pricingModel: "freemium", rating: "4.0", reviewCount: "850" },
+        
+        // Agriculture & Environment
+        { name: "Climate AI", description: "AI platform for climate risk assessment", website: "https://climate.ai", category: "environmental", pricingModel: "enterprise", rating: "4.3", reviewCount: "180" },
+        { name: "Blue River Technology", description: "AI-powered precision agriculture", website: "https://bluerivert.com", category: "agriculture", pricingModel: "enterprise", rating: "4.2", reviewCount: "120" },
+        { name: "Taranis", description: "AI crop monitoring and analytics", website: "https://taranis.com", category: "agriculture", pricingModel: "subscription", rating: "4.1", reviewCount: "95" },
+        { name: "Prospera", description: "AI-driven crop management platform", website: "https://prospera.ag", category: "agriculture", pricingModel: "subscription", rating: "4.0", reviewCount: "110" }
       ];
 
       for (const tool of aiToolCollections) {
