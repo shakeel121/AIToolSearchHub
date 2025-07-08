@@ -102,37 +102,69 @@ export class DatabaseStorage implements IStorage {
     // Build where conditions
     const conditions = [eq(submissions.status, "approved")];
     
-    // Add text search conditions if query is provided
-    if (query && query.trim()) {
-      conditions.push(
-        or(
-          ilike(submissions.name, `%${query}%`),
-          ilike(submissions.shortDescription, `%${query}%`),
-          ilike(submissions.detailedDescription, `%${query}%`),
-          sql`array_to_string(${submissions.tags}, ' ') ILIKE ${`%${query}%`}`
-        )!
-      );
-    }
-    
     // Add category filter if provided
     if (category) {
       conditions.push(eq(submissions.category, category));
     }
 
-    const baseQuery = db
+    let baseQuery = db
       .select()
       .from(submissions)
       .where(and(...conditions));
 
+    // If no search query, return all approved submissions
+    if (!query || !query.trim()) {
+      const [results, countResult] = await Promise.all([
+        baseQuery
+          .orderBy(desc(submissions.createdAt))
+          .limit(limit)
+          .offset(offset),
+        db
+          .select({ count: sql<number>`count(*)` })
+          .from(submissions)
+          .where(and(...conditions))
+      ]);
+      
+      return {
+        submissions: results,
+        total: countResult[0]?.count || 0
+      };
+    }
+
+    // Add text search conditions for queries
+    const searchConditions = [
+      ...conditions,
+      or(
+        ilike(submissions.name, `%${query}%`),
+        ilike(submissions.shortDescription, `%${query}%`),
+        ilike(submissions.detailedDescription, `%${query}%`),
+        sql`array_to_string(${submissions.tags}, ' ') ILIKE ${`%${query}%`}`
+      )!
+    ];
+
+    baseQuery = db
+      .select()
+      .from(submissions)
+      .where(and(...searchConditions));
+
     const [results, countResult] = await Promise.all([
       baseQuery
-        .orderBy(desc(submissions.createdAt))
+        .orderBy(
+          sql`CASE 
+            WHEN ${submissions.name} ILIKE ${`%${query}%`} THEN 1 
+            WHEN ${submissions.shortDescription} ILIKE ${`%${query}%`} THEN 2 
+            WHEN ${submissions.detailedDescription} ILIKE ${`%${query}%`} THEN 3
+            ELSE 4 
+          END`,
+          desc(submissions.rating),
+          desc(submissions.createdAt)
+        )
         .limit(limit)
         .offset(offset),
       db
         .select({ count: sql<number>`count(*)` })
         .from(submissions)
-        .where(and(...conditions))
+        .where(and(...searchConditions))
     ]);
 
     return {

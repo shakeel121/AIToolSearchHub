@@ -35,7 +35,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Search submissions
   app.get("/api/search", async (req, res) => {
     try {
-      const query = req.query.q as string || "";
+      const query = (req.query.query as string) || (req.query.q as string) || "";
       const category = req.query.category as string;
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
