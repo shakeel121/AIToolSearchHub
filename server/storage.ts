@@ -1,4 +1,4 @@
-import { submissions, searchQueries, reviews, users, type Submission, type InsertSubmission, type SearchQuery, type InsertSearchQuery, type Review, type InsertReview, type User, type InsertUser } from "@shared/schema";
+import { submissions, searchQueries, reviews, users, sessions, type Submission, type InsertSubmission, type SearchQuery, type InsertSearchQuery, type Review, type InsertReview, type User, type InsertUser, type Session, type InsertSession } from "@shared/schema";
 import { db } from "./db";
 import { eq, ilike, sql, desc, asc, and, or } from "drizzle-orm";
 
@@ -7,6 +7,11 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  
+  // Session methods
+  createSession(session: InsertSession): Promise<Session>;
+  getSession(id: string): Promise<Session | undefined>;
+  deleteSession(id: string): Promise<void>;
   
   // Submission methods
   createSubmission(submission: InsertSubmission): Promise<Submission>;
@@ -43,6 +48,29 @@ export class DatabaseStorage implements IStorage {
       .values(insertUser)
       .returning();
     return user;
+  }
+
+  // Session methods
+  async createSession(session: InsertSession): Promise<Session> {
+    const [created] = await db
+      .insert(sessions)
+      .values(session)
+      .returning();
+    return created;
+  }
+
+  async getSession(id: string): Promise<Session | undefined> {
+    const [session] = await db
+      .select()
+      .from(sessions)
+      .where(eq(sessions.id, id));
+    return session || undefined;
+  }
+
+  async deleteSession(id: string): Promise<void> {
+    await db
+      .delete(sessions)
+      .where(eq(sessions.id, id));
   }
 
   // Submission methods

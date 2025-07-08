@@ -10,7 +10,6 @@ export default function Header() {
   const navigation = [
     { name: "Search", href: "/" },
     { name: "Submit Tool", href: "/submit" },
-    { name: "Admin", href: "/admin" },
   ];
 
   return (

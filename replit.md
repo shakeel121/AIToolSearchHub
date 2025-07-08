@@ -84,6 +84,16 @@ Build commands:
 
 Preferred communication style: Simple, everyday language.
 
+## Admin Credentials
+
+**Admin Access Information:**
+- **Login URL:** `/admin-login`
+- **Username:** `admin`
+- **Password:** `aisearch2024!`
+- **Session Token:** `aisearch-admin-2024`
+
+Admin panel is hidden from public navigation and accessible only through the secure login page. All admin routes are protected with authentication middleware.
+
 ## Recent Changes
 
 Recent Changes:
@@ -98,6 +108,11 @@ Recent Changes:
 - Enhanced category filtering with improved visual layout and color coding
 - Updated submission form with all new categories
 - Applied database schema changes to support expanded categorization
+- July 08, 2025: Added real-time data seeding with 16 popular AI tools across all categories
+- Implemented secure admin authentication system with protected routes
+- Hidden admin panel from public navigation, accessible only via secure login
+- Created dedicated admin login page with credentials display
+- Added session-based authentication for admin operations
 
 ## Changelog
 

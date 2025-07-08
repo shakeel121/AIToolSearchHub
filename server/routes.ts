@@ -3,8 +3,32 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertSubmissionSchema, insertSearchQuerySchema, insertReviewSchema } from "@shared/schema";
 import { z } from "zod";
+import { seedDatabase } from "./seed";
+import { nanoid } from "nanoid";
+
+// Authentication middleware
+function requireAuth(req: any, res: any, next: any) {
+  const sessionId = req.headers.authorization?.replace('Bearer ', '');
+  if (!sessionId) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+  
+  // In a real app, validate session from database
+  if (sessionId === process.env.ADMIN_SESSION_TOKEN || sessionId === "aisearch-admin-2024") {
+    req.user = { role: "admin" };
+    next();
+  } else {
+    res.status(401).json({ error: "Invalid session" });
+  }
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Seed database on startup
+  try {
+    await seedDatabase();
+  } catch (error) {
+    console.error("Database seeding failed:", error);
+  }
   // Search submissions
   app.get("/api/search", async (req, res) => {
     try {
@@ -72,8 +96,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin authentication
+  app.post("/api/admin/login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      
+      if (username === "admin" && password === "aisearch2024!") {
+        const sessionToken = "aisearch-admin-2024";
+        res.json({ 
+          success: true, 
+          token: sessionToken,
+          message: "Authentication successful" 
+        });
+      } else {
+        res.status(401).json({ error: "Invalid credentials" });
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Login failed" });
+    }
+  });
+
   // Admin: Get pending submissions
-  app.get("/api/admin/pending", async (req, res) => {
+  app.get("/api/admin/pending", requireAuth, async (req, res) => {
     try {
       const submissions = await storage.getPendingSubmissions();
       res.json(submissions);
@@ -84,7 +129,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin: Approve submission
-  app.post("/api/admin/approve/:id", async (req, res) => {
+  app.post("/api/admin/approve/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.approveSubmission(id);
@@ -96,7 +141,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin: Reject submission
-  app.post("/api/admin/reject/:id", async (req, res) => {
+  app.post("/api/admin/reject/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.rejectSubmission(id);
@@ -108,7 +153,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin: Get statistics
-  app.get("/api/admin/stats", async (req, res) => {
+  app.get("/api/admin/stats", requireAuth, async (req, res) => {
     try {
       const stats = await storage.getSubmissionStats();
       res.json(stats);

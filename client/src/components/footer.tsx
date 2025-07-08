@@ -69,7 +69,16 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 AISearch. All rights reserved.</p>
+          <div className="flex items-center justify-center space-x-4 mb-4">
+            <p>&copy; 2024 AISearch. All rights reserved.</p>
+            <span>•</span>
+            <Link
+              href="/admin-login"
+              className="text-gray-500 hover:text-gray-300 transition-colors duration-200 text-sm"
+            >
+              Admin Access
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
