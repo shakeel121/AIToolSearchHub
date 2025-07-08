@@ -1,5 +1,6 @@
 import { InsertSubmission } from "@shared/schema";
 import { fallbackAITools } from "./fallback-data";
+import { externalAPIFetcher } from "./external-apis";
 
 // Real-time data fetcher for AI tools
 export class AIToolDataFetcher {
@@ -71,19 +72,41 @@ export class AIToolDataFetcher {
   // Fetch data from GitHub trending AI repositories
   async fetchFromGitHub(): Promise<InsertSubmission[]> {
     try {
-      const response = await fetch('https://api.github.com/search/repositories?q=topic:artificial-intelligence+topic:machine-learning+sort:stars&per_page=30', {
-        headers: {
-          'Authorization': `token ${process.env.GITHUB_TOKEN}`,
-          'Accept': 'application/vnd.github.v3+json',
-        }
-      });
+      // Fetch multiple categories of AI repositories
+      const queries = [
+        'topic:artificial-intelligence+sort:stars',
+        'topic:machine-learning+sort:stars',
+        'topic:deep-learning+sort:stars',
+        'topic:computer-vision+sort:stars',
+        'topic:natural-language-processing+sort:stars',
+        'topic:generative-ai+sort:stars',
+        'language:python+topic:ai+sort:stars',
+        'topic:llm+sort:stars',
+        'topic:gpt+sort:stars',
+        'topic:stable-diffusion+sort:stars'
+      ];
 
-      if (!response.ok) {
-        throw new Error(`GitHub API error: ${response.status}`);
+      const allRepos = [];
+      
+      for (const query of queries) {
+        try {
+          const response = await fetch(`https://api.github.com/search/repositories?q=${query}&per_page=10`, {
+            headers: {
+              'Authorization': `token ${process.env.GITHUB_TOKEN}`,
+              'Accept': 'application/vnd.github.v3+json',
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            allRepos.push(...data.items);
+          }
+        } catch (error) {
+          console.log(`Error fetching GitHub query ${query}:`, error.message);
+        }
       }
 
-      const data = await response.json();
-      return this.transformGitHubData(data.items);
+      return this.transformGitHubData(allRepos);
     } catch (error) {
       console.error('Error fetching from GitHub:', error);
       return [];
@@ -93,18 +116,39 @@ export class AIToolDataFetcher {
   // Fetch data from AI news and tool aggregators
   async fetchFromAINews(): Promise<InsertSubmission[]> {
     try {
-      const response = await fetch('https://api.huggingface.co/api/models?sort=downloads&direction=-1&limit=20', {
-        headers: {
-          'Authorization': `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-        }
-      });
+      const allModels = [];
 
-      if (!response.ok) {
-        throw new Error(`Hugging Face API error: ${response.status}`);
+      // Fetch different types of models from Hugging Face
+      const modelTypes = [
+        'text-generation',
+        'text-to-image',
+        'image-classification',
+        'automatic-speech-recognition',
+        'text-classification',
+        'translation',
+        'summarization',
+        'question-answering',
+        'conversational'
+      ];
+
+      for (const modelType of modelTypes) {
+        try {
+          const response = await fetch(`https://api.huggingface.co/api/models?pipeline_tag=${modelType}&sort=downloads&direction=-1&limit=5`, {
+            headers: {
+              'Authorization': `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            allModels.push(...data);
+          }
+        } catch (error) {
+          console.log(`Error fetching ${modelType} models:`, error.message);
+        }
       }
 
-      const data = await response.json();
-      return this.transformHuggingFaceData(data);
+      return this.transformHuggingFaceData(allModels);
     } catch (error) {
       console.error('Error fetching from Hugging Face:', error);
       return [];
@@ -300,7 +344,7 @@ export class AIToolDataFetcher {
     }
 
     try {
-      const [productHuntData, githubData, huggingFaceData] = await Promise.all([
+      const [productHuntData, githubData, huggingFaceData, papersData, awesomeData] = await Promise.all([
         this.fetchFromProductHunt().catch(err => {
           console.log('⚠️  Product Hunt API unavailable:', err.message);
           return [];
@@ -313,9 +357,17 @@ export class AIToolDataFetcher {
           console.log('⚠️  Hugging Face API unavailable:', err.message);
           return [];
         }),
+        externalAPIFetcher.fetchFromPapersWithCode().catch(err => {
+          console.log('⚠️  Papers with Code API unavailable:', err.message);
+          return [];
+        }),
+        externalAPIFetcher.fetchAwesomeAILists().catch(err => {
+          console.log('⚠️  Awesome AI lists unavailable:', err.message);
+          return [];
+        }),
       ]);
 
-      const allData = [...productHuntData, ...githubData, ...huggingFaceData];
+      const allData = [...productHuntData, ...githubData, ...huggingFaceData, ...papersData, ...awesomeData];
       
       // If no real-time data was fetched, use fallback
       if (allData.length === 0) {
