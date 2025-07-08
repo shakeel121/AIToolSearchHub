@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import AdvertisementBanner from "./advertisement-banner";
 
 export default function Footer() {
   const footerSections = [
@@ -33,6 +34,13 @@ export default function Footer() {
 
   return (
     <footer className="bg-gray-900 text-white py-12">
+      {/* Footer Advertisement */}
+      <div className="bg-gray-800 py-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AdvertisementBanner placement="footer" />
+        </div>
+      </div>
+      
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>

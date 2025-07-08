@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import SearchResults from "@/components/search-results";
+import AdvertisementBanner from "@/components/advertisement-banner";
 import { apiRequest } from "@/lib/queryClient";
 
 const categories = [
@@ -208,6 +209,13 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Homepage Advertisement */}
+      <div className="container mx-auto px-4 py-6">
+        <div className="max-w-6xl mx-auto">
+          <AdvertisementBanner placement="between-results" />
+        </div>
+      </div>
+
       {/* Sponsored Section */}
       {sponsoredSubmissions && sponsoredSubmissions.length > 0 && (
         <div className="container mx-auto px-4 py-8">
@@ -322,6 +330,13 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Mid-page Advertisement */}
+      <div className="container mx-auto px-4 py-6">
+        <div className="max-w-6xl mx-auto">
+          <AdvertisementBanner placement="sidebar" />
+        </div>
+      </div>
 
       {/* Categories Section */}
       <div className="container mx-auto px-4 py-12">

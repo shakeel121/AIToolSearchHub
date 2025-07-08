@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ExternalLink, Star, ChevronLeft, ChevronRight, DollarSign, Crown } from "lucide-react";
+import AdvertisementBanner from "./advertisement-banner";
 
 interface SearchResultsProps {
   query: string;
@@ -191,122 +192,148 @@ export default function SearchResults({ query, category }: SearchResultsProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-600">
-          Found {data.total} results for "{query}"
-        </p>
-      </div>
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      {/* Main Results Column */}
+      <div className="lg:col-span-3 space-y-6">
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-gray-600">
+            Found {data.total} results for "{query}"
+          </p>
+        </div>
 
-      {data.submissions.map((submission: any) => (
-        <Card key={submission.id} className="shadow-sm hover:shadow-md transition-shadow duration-200">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center mb-2">
-                  <Badge className={getCategoryColor(submission.category)}>
-                    {getCategoryLabel(submission.category)}
-                  </Badge>
-                  {submission.rating && (
-                    <div className="flex items-center ml-3 text-sm text-yellow-600">
-                      <Star className="h-4 w-4 fill-current" />
-                      <span className="ml-1">
-                        {submission.rating} ({submission.reviewCount} reviews)
+        {data.submissions.map((submission: any, index: number) => (
+          <div key={submission.id}>
+            <Card className="shadow-sm hover:shadow-md transition-shadow duration-200">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center mb-2">
+                      <Badge className={getCategoryColor(submission.category)}>
+                        {getCategoryLabel(submission.category)}
+                      </Badge>
+                      {submission.rating && (
+                        <div className="flex items-center ml-3 text-sm text-yellow-600">
+                          <Star className="h-4 w-4 fill-current" />
+                          <span className="ml-1">
+                            {submission.rating} ({submission.reviewCount} reviews)
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      <a 
+                        href={submission.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-blue-600 transition-colors duration-200 inline-flex items-center"
+                      >
+                        {submission.name}
+                        <ExternalLink className="h-4 w-4 ml-1" />
+                      </a>
+                    </h3>
+                    
+                    <p className="text-gray-600 mb-4">
+                      {submission.shortDescription}
+                    </p>
+                    
+                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                      {submission.pricing && (
+                        <span>Pricing: {submission.pricing}</span>
+                      )}
+                      <span>
+                        Updated: {new Date(submission.updatedAt).toLocaleDateString()}
                       </span>
                     </div>
-                  )}
-                </div>
-                
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  <a 
-                    href={submission.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-blue-600 transition-colors duration-200 inline-flex items-center"
-                  >
-                    {submission.name}
-                    <ExternalLink className="h-4 w-4 ml-1" />
-                  </a>
-                </h3>
-                
-                <p className="text-gray-600 mb-4">
-                  {submission.shortDescription}
-                </p>
-                
-                <div className="flex items-center space-x-4 text-sm text-gray-500">
-                  {submission.pricing && (
-                    <span>Pricing: {submission.pricing}</span>
-                  )}
-                  <span>
-                    Updated: {new Date(submission.updatedAt).toLocaleDateString()}
-                  </span>
-                </div>
-                
-                {submission.tags && submission.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-3">
-                    {submission.tags.map((tag: string, index: number) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
+                    
+                    {submission.tags && submission.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-3">
+                        {submission.tags.map((tag: string, index: number) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
+                  
+                  {submission.images && submission.images.length > 0 && (
+                    <img
+                      src={submission.images[0]}
+                      alt={submission.name}
+                      className="w-16 h-16 rounded-lg object-cover ml-6"
+                    />
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Show advertisement every 3 results */}
+            {(index + 1) % 3 === 0 && (
+              <div className="mt-6">
+                <AdvertisementBanner placement="between-results" />
               </div>
+            )}
+          </div>
+        ))}
+        
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-12">
+            <nav className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="flex items-center"
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                Previous
+              </Button>
               
-              {submission.images && submission.images.length > 0 && (
-                <img
-                  src={submission.images[0]}
-                  alt={submission.name}
-                  className="w-16 h-16 rounded-lg object-cover ml-6"
-                />
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-12">
-          <nav className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              className="flex items-center"
-            >
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              Previous
-            </Button>
-            
-            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-              const page = i + Math.max(1, currentPage - 2);
-              if (page > totalPages) return null;
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const page = i + Math.max(1, currentPage - 2);
+                if (page > totalPages) return null;
+                
+                return (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "outline"}
+                    onClick={() => setCurrentPage(page)}
+                    className="w-10"
+                  >
+                    {page}
+                  </Button>
+                );
+              })}
               
-              return (
-                <Button
-                  key={page}
-                  variant={currentPage === page ? "default" : "outline"}
-                  onClick={() => setCurrentPage(page)}
-                  className="w-10"
-                >
-                  {page}
-                </Button>
-              );
-            })}
-            
-            <Button
-              variant="outline"
-              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage === totalPages}
-              className="flex items-center"
-            >
-              Next
-              <ChevronRight className="h-4 w-4 ml-1" />
-            </Button>
-          </nav>
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className="flex items-center"
+              >
+                Next
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </nav>
+          </div>
+        )}
+      </div>
+      
+      {/* Sidebar with Advertisements */}
+      <div className="lg:col-span-1">
+        <div className="sticky top-20 space-y-6">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Sponsored</h3>
+            <AdvertisementBanner placement="sidebar" />
+          </div>
+          
+          <div className="mt-6">
+            <AdvertisementBanner placement="sidebar" />
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

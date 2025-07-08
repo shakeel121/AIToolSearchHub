@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import AdvertisementBanner from "./advertisement-banner";
 
 export default function Header() {
   const [location] = useLocation();
@@ -13,9 +14,17 @@ export default function Header() {
   ];
 
   return (
-    <header className="border-b border-gray-200 sticky top-0 bg-white z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+    <>
+      {/* Header Advertisement */}
+      <div className="bg-gray-50 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+          <AdvertisementBanner placement="header" />
+        </div>
+      </div>
+      
+      <header className="border-b border-gray-200 sticky top-0 bg-white z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-600 rounded-full flex items-center justify-center">
@@ -75,7 +84,8 @@ export default function Header() {
             </nav>
           </div>
         )}
-      </div>
-    </header>
+        </div>
+      </header>
+    </>
   );
 }
