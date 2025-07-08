@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { CheckCircle, XCircle, Star, DollarSign, Eye, Trash2, Edit, TrendingUp, Users } from "lucide-react";
+import { CheckCircle, XCircle, Star, DollarSign, Eye, Trash2, Edit, TrendingUp, Users, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Submission } from "@shared/schema";
 
@@ -177,12 +177,13 @@ export default function AdminPanel() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="pending">Pending</TabsTrigger>
           <TabsTrigger value="submissions">All Submissions</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="monetization">Monetization</TabsTrigger>
+          <TabsTrigger value="advertisements">Advertisements</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -507,6 +508,167 @@ export default function AdminPanel() {
                       Sponsored listings can have premium, gold, or platinum levels with different commission rates.
                       Currently {stats?.sponsored || 0} listings are sponsored.
                     </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="advertisements" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Advertisement Management</CardTitle>
+              <CardDescription>Create and manage advertisements across the platform</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold">Active Advertisements</h3>
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Advertisement
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <Card className="border-green-200">
+                    <CardHeader className="pb-3">
+                      <div className="flex justify-between items-start">
+                        <Badge variant="outline" className="bg-green-50 text-green-700">
+                          Active
+                        </Badge>
+                        <div className="flex space-x-1">
+                          <Button size="sm" variant="outline">
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div>
+                        <h4 className="font-medium">AI Tools Premium</h4>
+                        <p className="text-sm text-gray-600">Header placement</p>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Budget: $1,000</span>
+                        <span>CPC: $2.50</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span><Eye className="h-3 w-3 inline mr-1" />1,234 views</span>
+                        <span><DollarSign className="h-3 w-3 inline mr-1" />56 clicks</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-blue-200">
+                    <CardHeader className="pb-3">
+                      <div className="flex justify-between items-start">
+                        <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                          Active
+                        </Badge>
+                        <div className="flex space-x-1">
+                          <Button size="sm" variant="outline">
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div>
+                        <h4 className="font-medium">AI Courses</h4>
+                        <p className="text-sm text-gray-600">Sidebar placement</p>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Budget: $500</span>
+                        <span>CPC: $1.75</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span><Eye className="h-3 w-3 inline mr-1" />892 views</span>
+                        <span><DollarSign className="h-3 w-3 inline mr-1" />42 clicks</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-purple-200">
+                    <CardHeader className="pb-3">
+                      <div className="flex justify-between items-start">
+                        <Badge variant="outline" className="bg-purple-50 text-purple-700">
+                          Active
+                        </Badge>
+                        <div className="flex space-x-1">
+                          <Button size="sm" variant="outline">
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div>
+                        <h4 className="font-medium">Enterprise Solutions</h4>
+                        <p className="text-sm text-gray-600">Between results</p>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Budget: $2,000</span>
+                        <span>CPC: $5.00</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span><Eye className="h-3 w-3 inline mr-1" />567 views</span>
+                        <span><DollarSign className="h-3 w-3 inline mr-1" />23 clicks</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <Card className="mt-6">
+                  <CardHeader>
+                    <CardTitle>Advertisement Performance</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-600">8</div>
+                        <div className="text-sm text-gray-500">Active Ads</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-blue-600">45.2K</div>
+                        <div className="text-sm text-gray-500">Total Impressions</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-purple-600">1,234</div>
+                        <div className="text-sm text-gray-500">Total Clicks</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-orange-600">2.73%</div>
+                        <div className="text-sm text-gray-500">CTR</div>
+                      </div>
+                    </div>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={[
+                        { name: 'Jan', impressions: 4000, clicks: 240 },
+                        { name: 'Feb', impressions: 3000, clicks: 139 },
+                        { name: 'Mar', impressions: 2000, clicks: 98 },
+                        { name: 'Apr', impressions: 2780, clicks: 390 },
+                        { name: 'May', impressions: 1890, clicks: 480 },
+                        { name: 'Jun', impressions: 2390, clicks: 380 },
+                      ]}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="impressions" fill="#8884d8" />
+                        <Bar dataKey="clicks" fill="#82ca9d" />
+                      </BarChart>
+                    </ResponsiveContainer>
                   </CardContent>
                 </Card>
               </div>

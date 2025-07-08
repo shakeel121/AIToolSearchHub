@@ -1,11 +1,11 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertSubmissionSchema, insertSearchQuerySchema, insertReviewSchema } from "@shared/schema";
+import { insertSubmissionSchema, insertSearchQuerySchema, insertReviewSchema, insertAdvertisementSchema, updateAdvertisementSchema, updateSubmissionSchema } from "@shared/schema";
 import { z } from "zod";
 import { seedDatabase } from "./seed";
 import { seedComprehensiveData } from "./comprehensive-seed";
-import { updateSubmissionSchema } from "@shared/schema";
+import { seedEnhancedData } from "./enhanced-seed";
 import { nanoid } from "nanoid";
 
 // Authentication middleware
@@ -29,6 +29,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   try {
     await seedDatabase();
     await seedComprehensiveData();
+    await seedEnhancedData();
   } catch (error) {
     console.error("Database seeding failed:", error);
   }
@@ -348,6 +349,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Get reviews error:", error);
       res.status(500).json({ error: "Failed to get reviews" });
+    }
+  });
+
+  // Advertisement CRUD routes
+  app.get('/api/admin/advertisements', requireAuth, async (req, res) => {
+    try {
+      const advertisements = await storage.getAllAdvertisements();
+      res.json(advertisements);
+    } catch (error) {
+      console.error("Get advertisements error:", error);
+      res.status(500).json({ error: "Failed to fetch advertisements" });
+    }
+  });
+
+  app.post('/api/admin/advertisements', requireAuth, async (req, res) => {
+    try {
+      const validatedData = insertAdvertisementSchema.parse(req.body);
+      const advertisement = await storage.createAdvertisement(validatedData);
+      res.status(201).json(advertisement);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Validation failed", details: error.errors });
+      } else {
+        console.error("Advertisement creation error:", error);
+        res.status(500).json({ error: "Failed to create advertisement" });
+      }
+    }
+  });
+
+  app.put('/api/admin/advertisements/:id', requireAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const validatedData = updateAdvertisementSchema.parse(req.body);
+      const advertisement = await storage.updateAdvertisement(id, validatedData);
+      res.json(advertisement);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Validation failed", details: error.errors });
+      } else {
+        console.error("Advertisement update error:", error);
+        res.status(500).json({ error: "Failed to update advertisement" });
+      }
+    }
+  });
+
+  app.delete('/api/admin/advertisements/:id', requireAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteAdvertisement(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Advertisement deletion error:", error);
+      res.status(500).json({ error: "Failed to delete advertisement" });
+    }
+  });
+
+  // Public advertisement endpoints
+  app.get('/api/advertisements/:placement', async (req, res) => {
+    try {
+      const placement = req.params.placement;
+      const advertisements = await storage.getAdvertisementsByPlacement(placement);
+      res.json(advertisements);
+    } catch (error) {
+      console.error("Get advertisements by placement error:", error);
+      res.status(500).json({ error: "Failed to fetch advertisements" });
+    }
+  });
+
+  app.post('/api/advertisements/:id/click', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.incrementAdClick(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Advertisement click tracking error:", error);
+      res.status(500).json({ error: "Failed to track click" });
+    }
+  });
+
+  app.post('/api/advertisements/:id/impression', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.incrementAdImpression(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Advertisement impression tracking error:", error);
+      res.status(500).json({ error: "Failed to track impression" });
     }
   });
 

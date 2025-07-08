@@ -1,4 +1,4 @@
-import { submissions, searchQueries, reviews, users, sessions, type Submission, type InsertSubmission, type SearchQuery, type InsertSearchQuery, type Review, type InsertReview, type User, type InsertUser, type Session, type InsertSession } from "@shared/schema";
+import { submissions, searchQueries, reviews, users, sessions, advertisements, type Submission, type InsertSubmission, type SearchQuery, type InsertSearchQuery, type Review, type InsertReview, type User, type InsertUser, type Session, type InsertSession, type Advertisement, type InsertAdvertisement } from "@shared/schema";
 import { db } from "./db";
 import { eq, ilike, sql, desc, asc, and, or } from "drizzle-orm";
 
@@ -33,6 +33,17 @@ export interface IStorage {
   // Review methods
   createReview(review: InsertReview): Promise<Review>;
   getReviewsBySubmission(submissionId: number): Promise<Review[]>;
+  
+  // Advertisement methods
+  createAdvertisement(advertisement: InsertAdvertisement): Promise<Advertisement>;
+  getAdvertisement(id: number): Promise<Advertisement | undefined>;
+  updateAdvertisement(id: number, updates: any): Promise<Advertisement>;
+  deleteAdvertisement(id: number): Promise<void>;
+  getAdvertisementsByPlacement(placement: string): Promise<Advertisement[]>;
+  getActiveAdvertisements(): Promise<Advertisement[]>;
+  getAllAdvertisements(): Promise<Advertisement[]>;
+  incrementAdClick(id: number): Promise<void>;
+  incrementAdImpression(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -317,6 +328,107 @@ export class DatabaseStorage implements IStorage {
       .from(reviews)
       .where(eq(reviews.submissionId, submissionId))
       .orderBy(desc(reviews.createdAt));
+  }
+
+  // Advertisement methods
+  async createAdvertisement(advertisement: InsertAdvertisement): Promise<Advertisement> {
+    const [created] = await db
+      .insert(advertisements)
+      .values({
+        ...advertisement,
+        budget: advertisement.budget?.toString(),
+        costPerClick: advertisement.costPerClick?.toString(),
+      })
+      .returning();
+    return created;
+  }
+
+  async getAdvertisement(id: number): Promise<Advertisement | undefined> {
+    const [advertisement] = await db
+      .select()
+      .from(advertisements)
+      .where(eq(advertisements.id, id));
+    return advertisement || undefined;
+  }
+
+  async updateAdvertisement(id: number, updates: any): Promise<Advertisement> {
+    const [updated] = await db
+      .update(advertisements)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(advertisements.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteAdvertisement(id: number): Promise<void> {
+    await db
+      .delete(advertisements)
+      .where(eq(advertisements.id, id));
+  }
+
+  async getAdvertisementsByPlacement(placement: string): Promise<Advertisement[]> {
+    const now = new Date();
+    const results = await db
+      .select()
+      .from(advertisements)
+      .where(
+        and(
+          eq(advertisements.placement, placement),
+          eq(advertisements.isActive, true),
+          or(
+            sql`${advertisements.endDate} IS NULL`,
+            sql`${advertisements.endDate} > ${now}`
+          )
+        )
+      )
+      .orderBy(desc(advertisements.createdAt));
+    return results;
+  }
+
+  async getActiveAdvertisements(): Promise<Advertisement[]> {
+    const now = new Date();
+    const results = await db
+      .select()
+      .from(advertisements)
+      .where(
+        and(
+          eq(advertisements.isActive, true),
+          or(
+            sql`${advertisements.endDate} IS NULL`,
+            sql`${advertisements.endDate} > ${now}`
+          )
+        )
+      )
+      .orderBy(desc(advertisements.createdAt));
+    return results;
+  }
+
+  async getAllAdvertisements(): Promise<Advertisement[]> {
+    const results = await db
+      .select()
+      .from(advertisements)
+      .orderBy(desc(advertisements.createdAt));
+    return results;
+  }
+
+  async incrementAdClick(id: number): Promise<void> {
+    await db
+      .update(advertisements)
+      .set({ 
+        clickCount: sql`${advertisements.clickCount} + 1`,
+        updatedAt: new Date()
+      })
+      .where(eq(advertisements.id, id));
+  }
+
+  async incrementAdImpression(id: number): Promise<void> {
+    await db
+      .update(advertisements)
+      .set({ 
+        impressionCount: sql`${advertisements.impressionCount} + 1`,
+        updatedAt: new Date()
+      })
+      .where(eq(advertisements.id, id));
   }
 }
 

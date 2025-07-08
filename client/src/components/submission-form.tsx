@@ -17,9 +17,6 @@ import { Upload, X } from "lucide-react";
 const formSchema = z.object({
   name: z.string().min(1, "Name is required").max(255),
   category: z.enum([
-    "ai-tools", 
-    "ai-products", 
-    "ai-agents",
     "large-language-models",
     "computer-vision",
     "natural-language-processing",
@@ -30,17 +27,33 @@ const formSchema = z.object({
     "ai-writing-assistants",
     "ai-code-assistants",
     "ai-data-analytics",
-    "ai-automation",
-    "ai-chatbots",
-    "ai-research-tools",
     "ai-healthcare",
     "ai-finance",
     "ai-education",
     "ai-marketing",
+    "ai-automation",
+    "ai-chatbots",
+    "ai-research-tools",
     "ai-productivity",
     "ai-gaming",
     "ai-robotics",
-    "ai-infrastructure"
+    "ai-infrastructure",
+    "ai-design-tools",
+    "ai-translation",
+    "ai-voice-assistants",
+    "ai-content-generation",
+    "ai-cybersecurity",
+    "ai-ecommerce",
+    "ai-real-estate",
+    "ai-legal-tech",
+    "ai-hr-recruitment",
+    "ai-customer-service",
+    "ai-social-media",
+    "ai-seo-tools",
+    "ai-3d-modeling",
+    "ai-music-generation",
+    "ai-agriculture",
+    "ai-environmental"
   ], {
     required_error: "Category is required",
   }),
@@ -155,9 +168,7 @@ export default function SubmissionForm() {
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ai-tools">AI Tools</SelectItem>
-                  <SelectItem value="ai-products">AI Products</SelectItem>
-                  <SelectItem value="ai-agents">AI Agents</SelectItem>
+
                   <SelectItem value="large-language-models">Large Language Models</SelectItem>
                   <SelectItem value="computer-vision">Computer Vision</SelectItem>
                   <SelectItem value="natural-language-processing">Natural Language Processing</SelectItem>
@@ -179,6 +190,22 @@ export default function SubmissionForm() {
                   <SelectItem value="ai-gaming">Gaming</SelectItem>
                   <SelectItem value="ai-robotics">Robotics</SelectItem>
                   <SelectItem value="ai-infrastructure">Infrastructure</SelectItem>
+                  <SelectItem value="ai-design-tools">AI Design Tools</SelectItem>
+                  <SelectItem value="ai-translation">AI Translation</SelectItem>
+                  <SelectItem value="ai-voice-assistants">AI Voice Assistants</SelectItem>
+                  <SelectItem value="ai-content-generation">AI Content Generation</SelectItem>
+                  <SelectItem value="ai-cybersecurity">AI Cybersecurity</SelectItem>
+                  <SelectItem value="ai-ecommerce">AI E-commerce</SelectItem>
+                  <SelectItem value="ai-real-estate">AI Real Estate</SelectItem>
+                  <SelectItem value="ai-legal-tech">AI Legal Tech</SelectItem>
+                  <SelectItem value="ai-hr-recruitment">AI HR & Recruitment</SelectItem>
+                  <SelectItem value="ai-customer-service">AI Customer Service</SelectItem>
+                  <SelectItem value="ai-social-media">AI Social Media</SelectItem>
+                  <SelectItem value="ai-seo-tools">AI SEO Tools</SelectItem>
+                  <SelectItem value="ai-3d-modeling">AI 3D Modeling</SelectItem>
+                  <SelectItem value="ai-music-generation">AI Music Generation</SelectItem>
+                  <SelectItem value="ai-agriculture">AI Agriculture</SelectItem>
+                  <SelectItem value="ai-environmental">AI Environmental</SelectItem>
                 </SelectContent>
               </Select>
               {errors.category && (
