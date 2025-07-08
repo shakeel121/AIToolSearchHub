@@ -20,10 +20,22 @@ export const submissions = pgTable("submissions", {
   approvedAt: timestamp("approved_at"),
   rating: decimal("rating", { precision: 2, scale: 1 }),
   reviewCount: integer("review_count").default(0),
+  // Monetization fields
+  featured: boolean("featured").default(false),
+  sponsoredLevel: text("sponsored_level"), // "premium", "gold", "platinum"
+  monthlyClicks: integer("monthly_clicks").default(0),
+  totalRevenue: decimal("total_revenue", { precision: 10, scale: 2 }).default("0.00"),
+  commissionRate: decimal("commission_rate", { precision: 3, scale: 2 }).default("0.00"), // percentage
+  affiliateUrl: text("affiliate_url"),
+  promotionalBanner: text("promotional_banner"),
+  sponsorshipStartDate: timestamp("sponsorship_start_date"),
+  sponsorshipEndDate: timestamp("sponsorship_end_date"),
 }, (table) => ({
   nameIdx: index("idx_submissions_name").on(table.name),
   categoryIdx: index("idx_submissions_category").on(table.category),
   statusIdx: index("idx_submissions_status").on(table.status),
+  featuredIdx: index("idx_submissions_featured").on(table.featured),
+  sponsoredIdx: index("idx_submissions_sponsored").on(table.sponsoredLevel),
 }));
 
 export const searchQueries = pgTable("search_queries", {
@@ -63,6 +75,8 @@ export const insertSubmissionSchema = createInsertSchema(submissions).omit({
   approvedAt: true,
   rating: true,
   reviewCount: true,
+  monthlyClicks: true,
+  totalRevenue: true,
 }).extend({
   name: z.string().min(1, "Name is required").max(255),
   category: z.enum([
@@ -112,8 +126,15 @@ export const insertReviewSchema = createInsertSchema(reviews).omit({
   submissionId: z.number().positive(),
 });
 
+export const updateSubmissionSchema = createInsertSchema(submissions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).partial();
+
 export type InsertSubmission = z.infer<typeof insertSubmissionSchema>;
 export type Submission = typeof submissions.$inferSelect;
+export type UpdateSubmission = z.infer<typeof updateSubmissionSchema>;
 export type InsertSearchQuery = z.infer<typeof insertSearchQuerySchema>;
 export type SearchQuery = typeof searchQueries.$inferSelect;
 export type InsertReview = z.infer<typeof insertReviewSchema>;

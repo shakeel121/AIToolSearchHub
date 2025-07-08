@@ -16,11 +16,16 @@ export interface IStorage {
   // Submission methods
   createSubmission(submission: InsertSubmission): Promise<Submission>;
   getSubmission(id: number): Promise<Submission | undefined>;
+  updateSubmission(id: number, updates: any): Promise<Submission>;
+  deleteSubmission(id: number): Promise<void>;
   searchSubmissions(query: string, category?: string, limit?: number, offset?: number): Promise<{ submissions: Submission[]; total: number }>;
+  getAllSubmissions(limit?: number, offset?: number): Promise<{ submissions: Submission[]; total: number }>;
   getPendingSubmissions(): Promise<Submission[]>;
+  getFeaturedSubmissions(): Promise<Submission[]>;
+  getSponsoredSubmissions(): Promise<Submission[]>;
   approveSubmission(id: number): Promise<void>;
   rejectSubmission(id: number): Promise<void>;
-  getSubmissionStats(): Promise<{ total: number; approved: number; pending: number }>;
+  getSubmissionStats(): Promise<{ total: number; approved: number; pending: number; featured: number; sponsored: number }>;
   
   // Search query methods
   logSearchQuery(query: InsertSearchQuery): Promise<SearchQuery>;
@@ -165,7 +170,7 @@ export class DatabaseStorage implements IStorage {
       .where(eq(submissions.id, id));
   }
 
-  async getSubmissionStats(): Promise<{ total: number; approved: number; pending: number }> {
+  async getSubmissionStats(): Promise<{ total: number; approved: number; pending: number; featured: number; sponsored: number }> {
     const [totalResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(submissions);
@@ -180,11 +185,80 @@ export class DatabaseStorage implements IStorage {
       .from(submissions)
       .where(eq(submissions.status, "pending"));
 
+    const [featuredResult] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(submissions)
+      .where(eq(submissions.featured, true));
+
+    const [sponsoredResult] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(submissions)
+      .where(sql`${submissions.sponsoredLevel} IS NOT NULL`);
+
     return {
       total: totalResult?.count || 0,
       approved: approvedResult?.count || 0,
-      pending: pendingResult?.count || 0
+      pending: pendingResult?.count || 0,
+      featured: featuredResult?.count || 0,
+      sponsored: sponsoredResult?.count || 0,
     };
+  }
+
+  async updateSubmission(id: number, updates: any): Promise<Submission> {
+    const [updated] = await db
+      .update(submissions)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(submissions.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteSubmission(id: number): Promise<void> {
+    await db
+      .delete(submissions)
+      .where(eq(submissions.id, id));
+  }
+
+  async getAllSubmissions(limit = 50, offset = 0): Promise<{ submissions: Submission[]; total: number }> {
+    const [results, countResult] = await Promise.all([
+      db
+        .select()
+        .from(submissions)
+        .orderBy(desc(submissions.createdAt))
+        .limit(limit)
+        .offset(offset),
+      db
+        .select({ count: sql<number>`count(*)` })
+        .from(submissions)
+    ]);
+
+    return {
+      submissions: results,
+      total: countResult[0]?.count || 0
+    };
+  }
+
+  async getFeaturedSubmissions(): Promise<Submission[]> {
+    return await db
+      .select()
+      .from(submissions)
+      .where(and(eq(submissions.status, "approved"), eq(submissions.featured, true)))
+      .orderBy(desc(submissions.createdAt));
+  }
+
+  async getSponsoredSubmissions(): Promise<Submission[]> {
+    return await db
+      .select()
+      .from(submissions)
+      .where(and(
+        eq(submissions.status, "approved"),
+        sql`${submissions.sponsoredLevel} IS NOT NULL`,
+        or(
+          sql`${submissions.sponsorshipEndDate} IS NULL`,
+          sql`${submissions.sponsorshipEndDate} > NOW()`
+        )
+      ))
+      .orderBy(desc(submissions.createdAt));
   }
 
   // Search query methods

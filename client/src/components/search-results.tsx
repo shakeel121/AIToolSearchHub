@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExternalLink, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { ExternalLink, Star, ChevronLeft, ChevronRight, DollarSign, Crown } from "lucide-react";
 
 interface SearchResultsProps {
   query: string;
