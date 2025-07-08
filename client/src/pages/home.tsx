@@ -9,19 +9,55 @@ import SearchResults from "@/components/search-results";
 import { apiRequest } from "@/lib/queryClient";
 
 const categories = [
-  "Large Language Models", "Computer Vision", "Natural Language Processing",
-  "Machine Learning Platforms", "AI Art Generators", "Video Generation",
-  "Audio Tools", "Writing Assistants", "Code Assistants", "Data Analytics",
-  "Healthcare AI", "Finance AI", "Education AI", "Marketing AI",
-  "Automation Tools", "Chatbots", "Research Tools", "Productivity",
-  "Gaming AI", "Robotics", "AI Infrastructure", "Content Creation",
-  "Search & Discovery", "Personalization"
+  { label: "Large Language Models", value: "large-language-models" },
+  { label: "Computer Vision", value: "computer-vision" },
+  { label: "Natural Language Processing", value: "natural-language-processing" },
+  { label: "Machine Learning Platforms", value: "machine-learning-platforms" },
+  { label: "AI Art Generators", value: "ai-art-generators" },
+  { label: "Video Generation", value: "video-generation" },
+  { label: "Audio Tools", value: "audio-tools" },
+  { label: "Writing Assistants", value: "writing-assistants" },
+  { label: "Code Assistants", value: "code-assistants" },
+  { label: "Data Analytics", value: "data-analytics" },
+  { label: "Healthcare AI", value: "healthcare-ai" },
+  { label: "Finance AI", value: "finance-ai" },
+  { label: "Education AI", value: "education-ai" },
+  { label: "Marketing AI", value: "marketing-ai" },
+  { label: "Automation Tools", value: "automation-tools" },
+  { label: "Chatbots", value: "chatbots" },
+  { label: "Research Tools", value: "research-tools" },
+  { label: "Productivity", value: "productivity" },
+  { label: "Gaming AI", value: "gaming-ai" },
+  { label: "Robotics", value: "robotics" },
+  { label: "AI Infrastructure", value: "ai-infrastructure" },
+  { label: "Content Creation", value: "content-creation" },
+  { label: "Search & Discovery", value: "search-discovery" },
+  { label: "Personalization", value: "personalization" },
+  { label: "Design Tools", value: "ai-design-tools" },
+  { label: "Translation", value: "ai-translation" },
+  { label: "Voice Assistants", value: "voice-assistants" },
+  { label: "3D Modeling", value: "ai-3d-modeling" },
+  { label: "Music Generation", value: "ai-music-generation" },
+  { label: "Legal Tech", value: "ai-legal-tech" },
+  { label: "Real Estate", value: "ai-real-estate" },
+  { label: "Agriculture", value: "ai-agriculture" },
+  { label: "Customer Service", value: "ai-customer-service" },
+  { label: "HR & Recruitment", value: "ai-hr-recruitment" },
+  { label: "Cybersecurity", value: "ai-cybersecurity" },
+  { label: "Environmental", value: "ai-environmental" },
+  { label: "E-commerce", value: "ai-ecommerce" },
+  { label: "Social Media", value: "ai-social-media" },
+  { label: "SEO Tools", value: "ai-seo-tools" }
 ];
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
   const [isSearching, setIsSearching] = useState(false);
+
+  const getCategoryLabel = (value: string) => {
+    return categories.find(cat => cat.value === value)?.label || value;
+  };
 
   // Fetch featured and sponsored content for homepage
   const { data: featuredSubmissions } = useQuery({
@@ -91,7 +127,7 @@ export default function Home() {
               </div>
               {selectedCategory && (
                 <Badge variant="outline" className="text-lg px-4 py-2">
-                  Category: {selectedCategory}
+                  Category: {getCategoryLabel(selectedCategory)}
                   <button 
                     onClick={() => setSelectedCategory(undefined)}
                     className="ml-2 text-gray-500 hover:text-gray-700"
@@ -296,13 +332,13 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {categories.map((category) => (
               <Card 
-                key={category}
+                key={category.value}
                 className="cursor-pointer hover:shadow-md transition-shadow bg-white/80 backdrop-blur"
-                onClick={() => handleCategoryClick(category)}
+                onClick={() => handleCategoryClick(category.value)}
               >
                 <CardContent className="p-6 text-center">
                   <h3 className="font-semibold text-gray-900 text-sm">
-                    {category}
+                    {category.label}
                   </h3>
                 </CardContent>
               </Card>

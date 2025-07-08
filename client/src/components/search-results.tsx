@@ -19,7 +19,7 @@ export default function SearchResults({ query, category }: SearchResultsProps) {
     queryKey: ["/api/search", query, category, currentPage],
     queryFn: async () => {
       const params = new URLSearchParams({
-        q: query || "",
+        query: query || "",
         page: currentPage.toString(),
         limit: limit.toString(),
         ...(category && { category }),
