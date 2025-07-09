@@ -1,6 +1,7 @@
 import { submissions, searchQueries, reviews, users, sessions, advertisements, type Submission, type InsertSubmission, type SearchQuery, type InsertSearchQuery, type Review, type InsertReview, type User, type InsertUser, type Session, type InsertSession, type Advertisement, type InsertAdvertisement } from "@shared/schema";
 import { db } from "./db";
 import { eq, ilike, sql, desc, asc, and, or } from "drizzle-orm";
+import { aiSearchEngine } from "./ai-search-engine";
 
 export interface IStorage {
   // User methods
@@ -18,7 +19,7 @@ export interface IStorage {
   getSubmission(id: number): Promise<Submission | undefined>;
   updateSubmission(id: number, updates: any): Promise<Submission>;
   deleteSubmission(id: number): Promise<void>;
-  searchSubmissions(query: string, category?: string, limit?: number, offset?: number): Promise<{ submissions: Submission[]; total: number }>;
+  searchSubmissions(query: string, category?: string, limit?: number, offset?: number): Promise<{ submissions: Submission[]; total: number; metrics?: any }>;
   getAllSubmissions(limit?: number, offset?: number): Promise<{ submissions: Submission[]; total: number }>;
   getPendingSubmissions(): Promise<Submission[]>;
   getFeaturedSubmissions(): Promise<Submission[]>;
@@ -121,178 +122,73 @@ export class DatabaseStorage implements IStorage {
     return submission || undefined;
   }
 
-  async searchSubmissions(query: string, category?: string, limit = 10, offset = 0): Promise<{ submissions: Submission[]; total: number }> {
-    // Build base conditions
-    const conditions = [eq(submissions.status, "approved")];
+  async searchSubmissions(query: string, category?: string, limit = 10, offset = 0): Promise<{ submissions: Submission[]; total: number; metrics?: any }> {
+    const startTime = Date.now();
     
-    // Add category filter if provided
+    // Get all approved submissions for AI processing
+    const conditions = [eq(submissions.status, "approved")];
     if (category && category !== 'all') {
       conditions.push(eq(submissions.category, category));
     }
 
-    // If no search query, return all approved submissions with smart ordering
+    const allSubmissions = await db
+      .select()
+      .from(submissions)
+      .where(and(...conditions));
+
+    // If no search query, return smart-ordered results
     if (!query || !query.trim()) {
-      const [results, countResult] = await Promise.all([
-        db
-          .select()
-          .from(submissions)
-          .where(and(...conditions))
-          .orderBy(
-            desc(submissions.featured),  // Featured first
-            desc(sql`CASE WHEN ${submissions.sponsoredLevel} IS NOT NULL THEN 1 ELSE 0 END`), // Sponsored second
-            desc(sql`CAST(${submissions.rating} AS DECIMAL)`), // High ratings
-            desc(submissions.createdAt) // Recent submissions
-          )
-          .limit(limit)
-          .offset(offset),
-        db
-          .select({ count: sql<number>`count(*)` })
-          .from(submissions)
-          .where(and(...conditions))
-      ]);
+      const sorted = allSubmissions.sort((a, b) => {
+        // Priority: Featured > Sponsored > Rating > Recent
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+        
+        const aSponsorPriority = a.sponsoredLevel === 'platinum' ? 3 : a.sponsoredLevel === 'gold' ? 2 : a.sponsoredLevel === 'premium' ? 1 : 0;
+        const bSponsorPriority = b.sponsoredLevel === 'platinum' ? 3 : b.sponsoredLevel === 'gold' ? 2 : b.sponsoredLevel === 'premium' ? 1 : 0;
+        if (aSponsorPriority !== bSponsorPriority) return bSponsorPriority - aSponsorPriority;
+        
+        const aRating = parseFloat(a.rating || '0');
+        const bRating = parseFloat(b.rating || '0');
+        if (aRating !== bRating) return bRating - aRating;
+        
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+
+      const paginatedResults = sorted.slice(offset, offset + limit);
       
       return {
-        submissions: results,
-        total: countResult[0]?.count || 0
+        submissions: paginatedResults,
+        total: sorted.length,
+        metrics: {
+          processingTime: Date.now() - startTime,
+          algorithmUsed: 'smart_sorting',
+          totalScanned: allSubmissions.length
+        }
       };
     }
 
-    // Ultra-optimized search with fuzzy matching and AI-powered relevance
-    const searchQuery = query.trim().toLowerCase();
-    const searchTerms = searchQuery.split(/\s+/).filter(term => term.length > 0);
-    
-    // Create multiple search vectors for maximum relevance
-    const searchConditions = [];
-    
-    // Exact phrase matches (highest priority)
-    searchConditions.push(
-      or(
-        sql`LOWER(${submissions.name}) LIKE ${`%${searchQuery}%`}`,
-        sql`LOWER(${submissions.shortDescription}) LIKE ${`%${searchQuery}%`}`,
-        sql`LOWER(${submissions.detailedDescription}) LIKE ${`%${searchQuery}%`}`,
-        sql`LOWER(array_to_string(${submissions.tags}, ' ')) LIKE ${`%${searchQuery}%`}`,
-        sql`LOWER(${submissions.category}) LIKE ${`%${searchQuery}%`}`,
-        sql`LOWER(${submissions.pricingModel}) LIKE ${`%${searchQuery}%`}`
-      )
-    );
+    // Use AI-powered search engine for advanced search
+    const searchResult = aiSearchEngine.enhancedSearch(allSubmissions, query, {
+      category: category && category !== 'all' ? category : undefined
+    });
 
-    // Individual term matches for broader results
-    if (searchTerms.length > 1) {
-      const termConditions = searchTerms.map(term => 
-        or(
-          sql`LOWER(${submissions.name}) LIKE ${`%${term}%`}`,
-          sql`LOWER(${submissions.shortDescription}) LIKE ${`%${term}%`}`,
-          sql`LOWER(${submissions.detailedDescription}) LIKE ${`%${term}%`}`,
-          sql`LOWER(array_to_string(${submissions.tags}, ' ')) LIKE ${`%${term}%`}`,
-          sql`LOWER(${submissions.category}) LIKE ${`%${term}%`}`
-        )
-      );
-      searchConditions.push(...termConditions);
-    }
-
-    const finalConditions = [
-      ...conditions,
-      or(...searchConditions)!
-    ];
-
-    // Advanced relevance scoring algorithm
-    const relevanceScore = sql`
-      (
-        -- Exact name match (highest score: 100)
-        CASE WHEN LOWER(${submissions.name}) = ${searchQuery} THEN 100
-        -- Name starts with query (score: 90)
-        WHEN LOWER(${submissions.name}) LIKE ${`${searchQuery}%`} THEN 90
-        -- Name contains query (score: 80)
-        WHEN LOWER(${submissions.name}) LIKE ${`%${searchQuery}%`} THEN 80
-        -- Category exact match (score: 70)
-        WHEN LOWER(${submissions.category}) = ${searchQuery} THEN 70
-        -- Short description starts with query (score: 60)
-        WHEN LOWER(${submissions.shortDescription}) LIKE ${`${searchQuery}%`} THEN 60
-        -- Short description contains query (score: 50)
-        WHEN LOWER(${submissions.shortDescription}) LIKE ${`%${searchQuery}%`} THEN 50
-        -- Tags contain query (score: 40)
-        WHEN LOWER(array_to_string(${submissions.tags}, ' ')) LIKE ${`%${searchQuery}%`} THEN 40
-        -- Detailed description contains query (score: 30)
-        WHEN LOWER(${submissions.detailedDescription}) LIKE ${`%${searchQuery}%`} THEN 30
-        -- Category contains query (score: 20)
-        WHEN LOWER(${submissions.category}) LIKE ${`%${searchQuery}%`} THEN 20
-        -- Pricing model contains query (score: 10)
-        WHEN LOWER(${submissions.pricingModel}) LIKE ${`%${searchQuery}%`} THEN 10
-        ELSE 0 END
-        +
-        -- Boost for popular tools
-        CASE 
-          WHEN CAST(${submissions.rating} AS DECIMAL) >= 4.5 THEN 20
-          WHEN CAST(${submissions.rating} AS DECIMAL) >= 4.0 THEN 15
-          WHEN CAST(${submissions.rating} AS DECIMAL) >= 3.5 THEN 10
-          WHEN CAST(${submissions.rating} AS DECIMAL) >= 3.0 THEN 5
-          ELSE 0 
-        END
-        +
-        -- Boost for featured content
-        CASE WHEN ${submissions.featured} = true THEN 15 ELSE 0 END
-        +
-        -- Boost for sponsored content  
-        CASE 
-          WHEN ${submissions.sponsoredLevel} = 'platinum' THEN 12
-          WHEN ${submissions.sponsoredLevel} = 'gold' THEN 8
-          WHEN ${submissions.sponsoredLevel} = 'premium' THEN 5
-          ELSE 0 
-        END
-        +
-        -- Boost for recent submissions
-        CASE 
-          WHEN ${submissions.createdAt} > NOW() - INTERVAL '30 days' THEN 5
-          WHEN ${submissions.createdAt} > NOW() - INTERVAL '90 days' THEN 3
-          ELSE 0 
-        END
-      ) as relevance_score
-    `;
-
-    const [results, countResult] = await Promise.all([
-      db
-        .select({
-          id: submissions.id,
-          name: submissions.name,
-          shortDescription: submissions.shortDescription,
-          detailedDescription: submissions.detailedDescription,
-          website: submissions.website,
-          category: submissions.category,
-          pricingModel: submissions.pricingModel,
-          rating: submissions.rating,
-          reviewCount: submissions.reviewCount,
-          tags: submissions.tags,
-          featured: submissions.featured,
-          sponsoredLevel: submissions.sponsoredLevel,
-          affiliateUrl: submissions.affiliateUrl,
-          status: submissions.status,
-          createdAt: submissions.createdAt,
-          updatedAt: submissions.updatedAt,
-          approvedAt: submissions.approvedAt,
-          sponsorshipStartDate: submissions.sponsorshipStartDate,
-          sponsorshipEndDate: submissions.sponsorshipEndDate,
-          commissionRate: submissions.commissionRate,
-          clickCount: submissions.clickCount,
-          relevanceScore: relevanceScore
-        })
-        .from(submissions)
-        .where(and(...finalConditions))
-        .orderBy(
-          desc(sql`relevance_score`), // Primary: relevance score
-          desc(sql`CAST(${submissions.rating} AS DECIMAL)`), // Secondary: rating
-          desc(submissions.createdAt) // Tertiary: recency
-        )
-        .limit(limit)
-        .offset(offset),
-      db
-        .select({ count: sql<number>`count(*)` })
-        .from(submissions)
-        .where(and(...finalConditions))
-    ]);
+    // Apply pagination
+    const paginatedResults = searchResult.results.slice(offset, offset + limit);
 
     return {
-      submissions: results,
-      total: countResult[0]?.count || 0
+      submissions: paginatedResults,
+      total: searchResult.results.length,
+      metrics: {
+        ...searchResult.metrics,
+        processingTime: Date.now() - startTime,
+        query: query,
+        category: category || null,
+        pagination: {
+          offset,
+          limit,
+          totalPages: Math.ceil(searchResult.results.length / limit)
+        }
+      }
     };
   }
 

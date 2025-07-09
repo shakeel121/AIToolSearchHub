@@ -56,6 +56,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
   const [isSearching, setIsSearching] = useState(false);
+  const [useAdvancedSearch, setUseAdvancedSearch] = useState(false);
 
   const getCategoryLabel = (value: string) => {
     return categories.find(cat => cat.value === value)?.label || value;
