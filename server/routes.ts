@@ -513,6 +513,105 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Real AI tools 2025 endpoint for admin
+  app.post("/api/admin/seed-real-tools", requireAuth, async (req, res) => {
+    try {
+      const { realAITools2025 } = await import("./real-ai-tools-2025");
+      
+      let addedCount = 0;
+      let skippedCount = 0;
+      
+      for (const tool of realAITools2025) {
+        try {
+          // Check if tool already exists by name to avoid duplicates
+          const existing = await storage.getAllSubmissions(1000, 0);
+          const existingTool = existing.submissions.find(s => 
+            s.name.toLowerCase() === tool.name.toLowerCase() ||
+            s.url === tool.url
+          );
+          
+          if (!existingTool) {
+            await storage.createSubmission(tool);
+            addedCount++;
+          } else {
+            skippedCount++;
+          }
+        } catch (error) {
+          console.error(`Error adding tool ${tool.name}:`, error);
+          skippedCount++;
+        }
+      }
+      
+      res.json({ 
+        success: true, 
+        message: `Successfully added ${addedCount} real AI tools (${skippedCount} skipped)`,
+        addedCount,
+        skippedCount
+      });
+    } catch (error) {
+      console.error("Real tools seeding error:", error);
+      res.status(500).json({ error: "Failed to seed real AI tools data" });
+    }
+  });
+
+  // Verified reviews endpoint for admin
+  app.post("/api/admin/seed-reviews", requireAuth, async (req, res) => {
+    try {
+      const { verifiedReviews } = await import("./verified-reviews-seed");
+      
+      // Get all submissions to map names to IDs
+      const { submissions } = await storage.getAllSubmissions(100);
+      const submissionMap = new Map(submissions.map(s => [s.name, s.id]));
+      
+      let addedCount = 0;
+      let skippedCount = 0;
+      
+      // Map of review indices to submission names
+      const reviewToSubmissionMap = {
+        0: "ChatGPT-4o", 1: "ChatGPT-4o", 2: "ChatGPT-4o",
+        3: "Claude 3.5 Sonnet", 4: "Claude 3.5 Sonnet", 5: "Claude 3.5 Sonnet",
+        6: "Cursor", 7: "Cursor", 8: "Cursor",
+        9: "Midjourney V6", 10: "Midjourney V6", 11: "Midjourney V6",
+        12: "Runway Gen-3", 13: "Runway Gen-3",
+        14: "Jasper AI", 15: "Jasper AI",
+        16: "Perplexity Pro", 17: "Perplexity Pro",
+        18: "Suno AI", 19: "Suno AI",
+        20: "ElevenLabs", 21: "ElevenLabs"
+      };
+      
+      for (let i = 0; i < verifiedReviews.length; i++) {
+        const review = verifiedReviews[i];
+        const submissionName = reviewToSubmissionMap[i];
+        const submissionId = submissionMap.get(submissionName);
+        
+        if (submissionId) {
+          try {
+            await storage.createReview({
+              ...review,
+              submissionId
+            });
+            addedCount++;
+          } catch (error) {
+            console.error(`Failed to add review for ${submissionName}:`, error);
+            skippedCount++;
+          }
+        } else {
+          skippedCount++;
+        }
+      }
+      
+      res.json({ 
+        success: true, 
+        message: `Successfully added ${addedCount} verified reviews (${skippedCount} skipped)`,
+        addedCount,
+        skippedCount
+      });
+    } catch (error) {
+      console.error("Reviews seeding error:", error);
+      res.status(500).json({ error: "Failed to seed verified reviews" });
+    }
+  });
+
   // Public advertisement endpoints
   app.get('/api/advertisements/:placement', async (req, res) => {
     try {

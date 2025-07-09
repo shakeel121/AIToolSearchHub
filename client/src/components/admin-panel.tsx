@@ -232,6 +232,24 @@ export default function AdminPanel() {
     }
   });
 
+  const seedRealToolsMutation = useMutation({
+    mutationFn: () => apiRequest("POST", "/api/admin/seed-real-tools"),
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/submissions"] });
+      toast({ title: "Real AI tools seeded successfully", description: response.message });
+    }
+  });
+
+  const seedReviewsMutation = useMutation({
+    mutationFn: () => apiRequest("POST", "/api/admin/seed-reviews"),
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/submissions"] });
+      toast({ title: "Verified reviews seeded successfully", description: response.message });
+    }
+  });
+
   const openEditDialog = (submission: Submission) => {
     setEditingSubmission(submission);
     setFormData({
@@ -326,24 +344,39 @@ export default function AdminPanel() {
             <TabsTrigger value="advertisements">Advertisements</TabsTrigger>
           </TabsList>
           
-          <Button 
-            onClick={() => refreshDataMutation.mutate()}
-            disabled={refreshDataMutation.isPending}
-            variant="outline"
-            className="ml-4"
-          >
-            {refreshDataMutation.isPending ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div>
-                Refreshing...
-              </>
-            ) : (
-              <>
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh Data
-              </>
-            )}
-          </Button>
+          <div className="flex gap-2 ml-4">
+            <Button 
+              onClick={() => refreshDataMutation.mutate()}
+              disabled={refreshDataMutation.isPending}
+              variant="outline"
+            >
+              {refreshDataMutation.isPending ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div>
+                  Refreshing...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh Data
+                </>
+              )}
+            </Button>
+            <Button 
+              onClick={() => seedRealToolsMutation.mutate()}
+              disabled={seedRealToolsMutation.isPending}
+              variant="outline"
+            >
+              {seedRealToolsMutation.isPending ? "Seeding..." : "Seed Real Tools"}
+            </Button>
+            <Button 
+              onClick={() => seedReviewsMutation.mutate()}
+              disabled={seedReviewsMutation.isPending}
+              variant="outline"
+            >
+              {seedReviewsMutation.isPending ? "Seeding..." : "Seed Reviews"}
+            </Button>
+          </div>
         </div>
 
         <TabsContent value="overview" className="space-y-6">
