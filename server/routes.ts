@@ -478,6 +478,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Enhanced categories data endpoint for admin
+  app.post("/api/admin/seed-enhanced", requireAuth, async (req, res) => {
+    try {
+      const { enhancedAIToolsData } = await import("./enhanced-categories-seed-fixed");
+      
+      let addedCount = 0;
+      for (const tool of enhancedAIToolsData) {
+        try {
+          // Check if tool already exists by name to avoid duplicates
+          const existing = await storage.getAllSubmissions(1000, 0);
+          const existingTool = existing.submissions.find(s => 
+            s.name.toLowerCase() === tool.name.toLowerCase() ||
+            s.website === tool.website
+          );
+          
+          if (!existingTool) {
+            await storage.createSubmission(tool);
+            addedCount++;
+          }
+        } catch (error) {
+          console.error(`Error adding tool ${tool.name}:`, error);
+        }
+      }
+      
+      res.json({ 
+        message: `Enhanced categories seeded successfully`,
+        added: addedCount,
+        total: enhancedAIToolsData.length
+      });
+    } catch (error) {
+      console.error("Error seeding enhanced categories:", error);
+      res.status(500).json({ error: "Failed to seed enhanced categories" });
+    }
+  });
+
   // Public advertisement endpoints
   app.get('/api/advertisements/:placement', async (req, res) => {
     try {

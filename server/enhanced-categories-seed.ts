@@ -1,0 +1,623 @@
+import { InsertSubmission } from "@shared/schema";
+
+export const enhancedAIToolsData: InsertSubmission[] = [
+  // AI Workflow Automation & Productivity
+  {
+    name: "FlowForma Process Automation",
+    shortDescription: "AI-powered Copilot builds business processes in minutes using natural language",
+    detailedDescription: "Revolutionary no-code workflow automation platform with AI Copilot that creates complex business processes 10x faster than traditional tools. Features drag-and-drop interface, natural language process creation, and enterprise-grade security for construction, healthcare, energy, and finance industries.",
+    url: "https://www.flowforma.com",
+    category: "ai-automation",
+    pricing: "enterprise",
+    rating: "4.6",
+    reviewCount: 340,
+    tags: ["workflow", "automation", "no-code", "enterprise", "copilot"],
+    contactEmail: "contact@flowforma.com",
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Lindy AI",
+    shortDescription: "Custom AI agents (Lindies) for specific business workflows and automation",
+    detailedDescription: "Y Combinator-backed platform for creating custom AI agents that handle meeting prep, email triage, podcast-to-blog conversion, and other business workflows. No-code platform with strong momentum in the AI automation space.",
+    url: "https://lindy.ai",
+    category: "ai-automation",
+    pricingModel: "subscription",
+    rating: "4.4",
+    reviewCount: "180",
+    tags: ["ai-agents", "automation", "y-combinator", "no-code", "workflows"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Relay",
+    shortDescription: "Modern Zapier alternative with AI-powered workflow optimization",
+    detailedDescription: "Streamlined automation platform with familiar trigger/action interface enhanced by modern AI capabilities. Features minimal learning curve, smart workflow optimization, and seamless integration with existing business applications.",
+    url: "https://relay.app",
+    category: "ai-automation",
+    pricingModel: "freemium",
+    rating: "4.3",
+    reviewCount: "210",
+    tags: ["automation", "zapier-alternative", "workflows", "integration", "ai-optimization"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "VectorShift",
+    shortDescription: "Multi-LLM platform for complex workflows with voicebots and ML integration",
+    detailedDescription: "Advanced automation platform supporting multiple LLMs for sophisticated AI workflows. Features unique voicebot capabilities, advanced machine learning integration, and codeless automation for enterprise teams needing complex AI solutions.",
+    url: "https://vectorshift.ai",
+    category: "ai-automation",
+    pricingModel: "enterprise",
+    rating: "4.5",
+    reviewCount: "95",
+    tags: ["multi-llm", "voicebots", "machine-learning", "enterprise", "complex-workflows"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "tl;dv",
+    shortDescription: "AI meeting assistant that turns meetings into snappy reads with transcription",
+    detailedDescription: "Intelligent meeting assistant that provides AI transcription, automatically creates meeting summaries, and generates shareable clips. Transforms lengthy meetings into digestible insights and actionable takeaways.",
+    url: "https://tldv.io",
+    category: "productivity",
+    pricingModel: "freemium",
+    rating: "4.7",
+    reviewCount: "450",
+    tags: ["meetings", "transcription", "summaries", "clips", "productivity"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Scribe",
+    shortDescription: "AI-powered process documentation that saves 35 hours per month",
+    detailedDescription: "Revolutionary process documentation tool that automatically captures and documents workflows. Uses AI to create step-by-step guides, training materials, and process documentation, saving teams significant time on manual documentation tasks.",
+    website: "https://scribehow.com",
+    category: "productivity",
+    pricingModel: "freemium",
+    rating: "4.8",
+    reviewCount: "520",
+    tags: ["documentation", "process-capture", "training", "automation", "workflow"],
+    featured: true,
+    status: "approved"
+  },
+
+  // AI Video Generation & Editing
+  {
+    name: "RunwayML Gen-4",
+    shortDescription: "Next-generation AI video creation with Act-One character animation",
+    detailedDescription: "Leading AI video platform with Gen-4 model featuring enhanced narrative capabilities, groundbreaking Act-One character animation, real-time collaboration, and text-to-video generation. Professional-grade tool for filmmakers and content creators.",
+    website: "https://runwayml.com",
+    category: "ai-video-tools",
+    pricingModel: "subscription",
+    rating: "4.6",
+    reviewCount: "890",
+    tags: ["video-generation", "character-animation", "text-to-video", "professional", "filmmaking"],
+    featured: true,
+    sponsoredLevel: "gold",
+    sponsorshipStartDate: "2025-01-01",
+    sponsorshipEndDate: "2025-06-30",
+    status: "approved"
+  },
+  {
+    name: "Pika Labs 2.2",
+    shortDescription: "Democratizing video creation with 1080p HD AI video generation",
+    detailedDescription: "Advanced AI video generator with Pika 2.2 supporting 1080p HD output, Pikaframes keyframe system, Pikaswaps video inpainting, and Pikadditions for inserting characters. Designed for accessibility with intuitive interface for creators of all skill levels.",
+    website: "https://pika.art",
+    category: "ai-video-tools",
+    pricingModel: "freemium",
+    rating: "4.4",
+    reviewCount: "670",
+    tags: ["video-generation", "hd-output", "video-inpainting", "accessible", "social-media"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Synthesia 2025",
+    shortDescription: "AI avatar videos with multilingual text-to-video technology",
+    detailedDescription: "Enterprise-grade AI video generation platform creating professional avatar videos from text. Features multilingual support, realistic AI avatars, brand customization, and integration capabilities for business communications and training.",
+    website: "https://synthesia.io",
+    category: "ai-video-tools",
+    pricingModel: "subscription",
+    rating: "4.5",
+    reviewCount: "1200",
+    tags: ["avatar-videos", "multilingual", "enterprise", "business-communication", "training"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Crayo AI",
+    shortDescription: "TikTok-style short-form video creation with AI voiceovers and effects",
+    detailedDescription: "Specialized AI tool for creating viral short-form videos optimized for TikTok, Instagram Reels, and YouTube Shorts. Features AI voiceovers, automated effects, trending templates, and viral content optimization.",
+    website: "https://crayo.ai",
+    category: "ai-video-tools",
+    pricingModel: "freemium",
+    rating: "4.2",
+    reviewCount: "280",
+    tags: ["short-form", "tiktok", "viral-content", "voiceovers", "social-media"],
+    featured: false,
+    status: "approved"
+  },
+
+  // AI Code Assistants & Developer Tools
+  {
+    name: "Cursor Pro",
+    shortDescription: "AI-powered code editor with project-wide context and multi-file editing",
+    detailedDescription: "Revolutionary AI code editor with Composer mode, entire project context awareness, multiple AI models (GPT-4o, Claude 3.5 Sonnet, Gemini 2.0), and 320ms autocomplete response time. Leading innovation in multi-file editing and project scaffolding.",
+    website: "https://cursor.sh",
+    category: "ai-code-assistants",
+    pricingModel: "subscription",
+    rating: "4.8",
+    reviewCount: "950",
+    tags: ["code-editor", "project-context", "multi-model", "fast-autocomplete", "developer-tools"],
+    featured: true,
+    status: "approved"
+  },
+  {
+    name: "GitHub Copilot Enterprise",
+    shortDescription: "AI pair programmer with native IDE integration and team workflows",
+    detailedDescription: "Enterprise-grade AI coding assistant with native VS Code integration, multi-model support (GPT-4o, Claude 3.5 Sonnet, o1), agent mode, and comprehensive GitHub ecosystem integration. Industry standard for AI-assisted development.",
+    website: "https://github.com/features/copilot",
+    category: "ai-code-assistants",
+    pricingModel: "enterprise",
+    rating: "4.7",
+    reviewCount: "2100",
+    tags: ["github", "ide-integration", "enterprise", "pair-programming", "multi-model"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Qodo",
+    shortDescription: "AI-powered automated unit test generation and code quality optimization",
+    detailedDescription: "Specialized AI tool focused on automated unit test generation, code quality analysis, and testing optimization. Helps developers maintain high code quality standards with intelligent test creation and quality metrics.",
+    website: "https://qodo.ai",
+    category: "ai-code-assistants",
+    pricingModel: "freemium",
+    rating: "4.4",
+    reviewCount: "180",
+    tags: ["unit-testing", "code-quality", "automated-testing", "developer-tools", "quality-metrics"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Amazon Q Developer",
+    shortDescription: "AWS-native AI coding assistant with cloud development focus",
+    detailedDescription: "Cloud-native AI development assistant optimized for AWS environments. Features multi-agent workflows, AWS service integration, cloud architecture guidance, and specialized tools for serverless and cloud-native development.",
+    website: "https://aws.amazon.com/q/developer",
+    category: "ai-code-assistants",
+    pricingModel: "freemium",
+    rating: "4.3",
+    reviewCount: "320",
+    tags: ["aws", "cloud-development", "serverless", "multi-agent", "cloud-native"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Aider",
+    shortDescription: "Terminal-based AI coding assistant with git integration and local models",
+    detailedDescription: "CLI-first AI coding assistant designed for terminal workflows. Features seamless git integration, support for local models, pair programming in the command line, and optimization for developers who prefer terminal-based workflows.",
+    website: "https://aider.chat",
+    category: "ai-code-assistants",
+    pricingModel: "free",
+    rating: "4.5",
+    reviewCount: "150",
+    tags: ["terminal", "cli", "git-integration", "local-models", "open-source"],
+    featured: false,
+    status: "approved"
+  },
+
+  // AI Marketing & Social Media Tools
+  {
+    name: "Sprout Social AI",
+    shortDescription: "AI-powered social media management with content generation and analytics",
+    detailedDescription: "Comprehensive social media platform with AI-powered content generation, social listening, advanced analytics, and CRM integration. Features unified inbox, campaign management, and team collaboration tools for enterprise social media management.",
+    website: "https://sproutsocial.com",
+    category: "ai-marketing",
+    pricingModel: "subscription",
+    rating: "4.6",
+    reviewCount: "850",
+    tags: ["social-media", "content-generation", "analytics", "crm", "enterprise"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Jasper AI",
+    shortDescription: "AI content creation platform for blog posts, ad copy, and marketing materials",
+    detailedDescription: "Leading AI writing assistant specialized in marketing content creation. Features brand voice training, template library, SEO optimization, team collaboration, and integration with marketing workflows for consistent, high-quality content at scale.",
+    website: "https://jasper.ai",
+    category: "ai-marketing",
+    pricingModel: "subscription",
+    rating: "4.5",
+    reviewCount: "1450",
+    tags: ["content-writing", "marketing", "brand-voice", "seo", "templates"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Copy.ai",
+    shortDescription: "AI copywriter for social media captions, ads, and workflow automation",
+    detailedDescription: "Versatile AI writing tool optimized for short-form content including Instagram captions, tweets, ad copy, and email sequences. Features workflow automation, brand kit integration, and specialized templates for different marketing channels.",
+    website: "https://copy.ai",
+    category: "ai-marketing",
+    pricingModel: "freemium",
+    rating: "4.3",
+    reviewCount: "720",
+    tags: ["copywriting", "social-media", "ad-copy", "automation", "templates"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Ocoya",
+    shortDescription: "All-in-one AI social media tool with content creation in 26 languages",
+    detailedDescription: "Comprehensive social media management platform combining AI content creation, scheduling, analytics, and automation. Supports 26 languages, features graphic design tools, and provides unified management across all major social platforms.",
+    website: "https://ocoya.com",
+    category: "ai-marketing",
+    pricingModel: "subscription",
+    rating: "4.4",
+    reviewCount: "380",
+    tags: ["multilingual", "social-media", "design", "scheduling", "analytics"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Albert.ai",
+    shortDescription: "Self-optimizing AI campaigns across Facebook, Google, and YouTube",
+    detailedDescription: "Autonomous AI marketing platform that creates, manages, and optimizes digital advertising campaigns across major platforms. Features real-time bid optimization, audience targeting, creative testing, and performance analytics for enterprise marketing teams.",
+    website: "https://albert.ai",
+    category: "ai-marketing",
+    pricingModel: "enterprise",
+    rating: "4.2",
+    reviewCount: "95",
+    tags: ["autonomous-campaigns", "optimization", "advertising", "enterprise", "multi-platform"],
+    featured: false,
+    status: "approved"
+  },
+
+  // AI Healthcare & Medical Tools
+  {
+    name: "Microsoft AI Diagnostic Orchestrator",
+    shortDescription: "AI diagnostic tool with 85% accuracy in complex medical cases",
+    detailedDescription: "Revolutionary AI diagnostic platform that correctly diagnoses up to 85% of complex medical cases from New England Journal of Medicine, outperforming physicians by 4x. Features sequential diagnosis, cost optimization, and step-by-step medical reasoning.",
+    website: "https://microsoft.ai/healthcare",
+    category: "ai-healthcare",
+    pricingModel: "enterprise",
+    rating: "4.9",
+    reviewCount: "45",
+    tags: ["medical-diagnosis", "clinical-reasoning", "healthcare", "enterprise", "microsoft"],
+    featured: true,
+    status: "approved"
+  },
+  {
+    name: "Ada Health",
+    shortDescription: "AI-powered self-diagnostic chatbot for personalized health assessments",
+    detailedDescription: "Intelligent health assessment platform that provides personalized symptom analysis and care guidance. Features comprehensive medical knowledge base, symptom checker, and care service direction for millions of users worldwide.",
+    website: "https://ada.com",
+    category: "ai-healthcare",
+    pricingModel: "freemium",
+    rating: "4.4",
+    reviewCount: "12000",
+    tags: ["symptom-checker", "health-assessment", "chatbot", "personalized", "medical"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "IDx-DR",
+    shortDescription: "FDA-approved autonomous AI for diabetic retinopathy detection",
+    detailedDescription: "First FDA-approved autonomous AI diagnostic system for detecting diabetic retinopathy in retinal photographs. Provides immediate results without physician interpretation, revolutionizing point-of-care diabetic eye screening.",
+    website: "https://eyediagnosis.net",
+    category: "ai-healthcare",
+    pricingModel: "enterprise",
+    rating: "4.7",
+    reviewCount: "180",
+    tags: ["fda-approved", "ophthalmology", "diabetic-retinopathy", "autonomous", "medical-imaging"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Viz.ai",
+    shortDescription: "Real-time AI stroke detection from CT scans for emergency care",
+    detailedDescription: "AI-powered stroke detection platform that analyzes CT scans in real-time to identify large vessel occlusions. Enables faster treatment decisions in emergency settings, potentially saving lives through rapid stroke identification and care coordination.",
+    website: "https://viz.ai",
+    category: "ai-healthcare",
+    pricingModel: "enterprise",
+    rating: "4.6",
+    reviewCount: "240",
+    tags: ["stroke-detection", "ct-scan", "emergency-care", "real-time", "medical-imaging"],
+    featured: false,
+    status: "approved"
+  },
+
+  // AI Drug Discovery & Biotech
+  {
+    name: "Exscientia",
+    shortDescription: "Oxford-based precision therapeutics with AI-designed drugs in clinical trials",
+    detailedDescription: "Leading AI drug discovery company with precision therapeutics platform. Features Centaur Chemist AI that designs molecules reaching clinical trials within 1 year. Partnerships with Sanofi, Bristol Myers Squibb, and other major pharma companies.",
+    website: "https://exscientia.ai",
+    category: "ai-drug-discovery",
+    pricingModel: "enterprise",
+    rating: "4.8",
+    reviewCount: "85",
+    tags: ["drug-discovery", "precision-therapeutics", "clinical-trials", "partnerships", "ai-molecules"],
+    featured: true,
+    status: "approved"
+  },
+  {
+    name: "Insilico Medicine",
+    shortDescription: "Full pipeline AI drug discovery with Pharma.AI platform",
+    detailedDescription: "Comprehensive AI platform for end-to-end drug discovery featuring PandaOmics for target discovery, Chemistry42 for molecule generation, and clinical prediction tools. Leading the transformation of pharmaceutical R&D with integrated AI solutions.",
+    website: "https://insilico.com",
+    category: "ai-drug-discovery",
+    pricingModel: "enterprise",
+    rating: "4.7",
+    reviewCount: "120",
+    tags: ["full-pipeline", "target-discovery", "molecule-generation", "pharma-ai", "clinical-prediction"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Recursion",
+    shortDescription: "Imaging-based drug discovery creating a comprehensive map of biology",
+    detailedDescription: "Utah-based biotech using advanced imaging and machine learning to create a comprehensive 'map of biology' for drug discovery. Features high-throughput cellular imaging, phenotypic screening, and AI-driven target identification.",
+    website: "https://recursion.com",
+    category: "ai-drug-discovery",
+    pricingModel: "enterprise",
+    rating: "4.5",
+    reviewCount: "95",
+    tags: ["imaging-based", "map-of-biology", "phenotypic-screening", "cellular-imaging", "target-identification"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Cradle Bio",
+    shortDescription: "AI protein engineering with $73M Series B funding",
+    detailedDescription: "Protein engineering platform using AI to design improved proteins for therapeutics. Recently raised $73M Series B funding and partnerships with Novo Nordisk and Johnson & Johnson. Focuses on creating more effective and safer protein-based drugs.",
+    website: "https://cradle.bio",
+    category: "ai-drug-discovery",
+    pricingModel: "enterprise",
+    rating: "4.6",
+    reviewCount: "60",
+    tags: ["protein-engineering", "therapeutics", "series-b", "partnerships", "protein-design"],
+    featured: false,
+    status: "approved"
+  },
+
+  // AI Finance & Trading
+  {
+    name: "Kensho",
+    shortDescription: "S&P Global's AI analytics for financial markets and economic analysis",
+    detailedDescription: "Advanced AI analytics platform for financial markets, providing real-time market insights, economic analysis, and predictive analytics. Used by major financial institutions for risk assessment, investment research, and market intelligence.",
+    website: "https://kensho.com",
+    category: "ai-finance",
+    pricingModel: "enterprise",
+    rating: "4.4",
+    reviewCount: "150",
+    tags: ["financial-analytics", "market-insights", "economic-analysis", "s&p-global", "enterprise"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Dataminr",
+    shortDescription: "Real-time AI platform for financial risk detection and market intelligence",
+    detailedDescription: "AI-powered real-time information discovery platform that detects high-impact events and emerging risks from publicly available data. Used by financial institutions for market intelligence, risk management, and crisis response.",
+    website: "https://dataminr.com",
+    category: "ai-finance",
+    pricingModel: "enterprise",
+    rating: "4.3",
+    reviewCount: "280",
+    tags: ["risk-detection", "market-intelligence", "real-time", "crisis-response", "financial-institutions"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Alpaca",
+    shortDescription: "Commission-free AI-powered algorithmic trading platform",
+    detailedDescription: "Modern brokerage platform offering commission-free trading with AI-powered algorithmic trading capabilities. Features paper trading, real-time market data, portfolio optimization, and developer-friendly APIs for automated trading strategies.",
+    website: "https://alpaca.markets",
+    category: "ai-finance",
+    pricingModel: "freemium",
+    rating: "4.2",
+    reviewCount: "450",
+    tags: ["algorithmic-trading", "commission-free", "paper-trading", "portfolio-optimization", "apis"],
+    featured: false,
+    status: "approved"
+  },
+
+  // AI Education & Learning
+  {
+    name: "Khan Academy AI Tutor",
+    shortDescription: "Personalized AI tutoring with Khanmigo for individualized learning",
+    detailedDescription: "Revolutionary AI tutoring platform providing personalized learning experiences with Khanmigo AI assistant. Features adaptive curriculum, real-time feedback, progress tracking, and individualized instruction across multiple subjects.",
+    website: "https://khanacademy.org/khan-labs",
+    category: "ai-education",
+    pricingModel: "freemium",
+    rating: "4.6",
+    reviewCount: "890",
+    tags: ["personalized-tutoring", "khanmigo", "adaptive-learning", "progress-tracking", "individualized"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Duolingo Max",
+    shortDescription: "AI-powered language learning with GPT-4 conversation practice",
+    detailedDescription: "Advanced language learning platform enhanced with GPT-4 for conversation practice, personalized explanations, and adaptive learning paths. Features AI conversation partner, mistake analysis, and culturally relevant content.",
+    website: "https://duolingo.com/max",
+    category: "ai-education",
+    pricingModel: "subscription",
+    rating: "4.5",
+    reviewCount: "2100",
+    tags: ["language-learning", "gpt-4", "conversation-practice", "adaptive", "cultural-content"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Socratic by Google",
+    shortDescription: "AI homework helper using camera and voice for step-by-step solutions",
+    detailedDescription: "Google-powered AI education app that helps students with homework by taking photos of problems or asking questions. Provides step-by-step explanations, relevant learning resources, and subject-specific guidance across mathematics, science, and more.",
+    website: "https://socratic.org",
+    category: "ai-education",
+    pricingModel: "free",
+    rating: "4.4",
+    reviewCount: "1500",
+    tags: ["homework-helper", "google", "camera-input", "step-by-step", "multi-subject"],
+    featured: false,
+    status: "approved"
+  },
+
+  // AI Legal & Compliance
+  {
+    name: "Harvey AI",
+    shortDescription: "AI legal assistant for law firms with case research and document analysis",
+    detailedDescription: "Professional AI assistant designed specifically for legal professionals. Features case law research, document analysis, contract review, legal writing assistance, and compliance monitoring. Trusted by top law firms for enhancing legal productivity.",
+    website: "https://harvey.ai",
+    category: "ai-legal-tech",
+    pricingModel: "enterprise",
+    rating: "4.5",
+    reviewCount: "180",
+    tags: ["legal-assistant", "case-research", "document-analysis", "contract-review", "law-firms"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Luminance",
+    shortDescription: "AI for legal document review and due diligence automation",
+    detailedDescription: "Advanced AI platform for legal document review, due diligence, and contract analysis. Uses machine learning to read and understand legal documents, identify risks, extract key information, and streamline legal workflows for law firms and enterprises.",
+    website: "https://luminance.com",
+    category: "ai-legal-tech",
+    pricingModel: "enterprise",
+    rating: "4.3",
+    reviewCount: "95",
+    tags: ["document-review", "due-diligence", "contract-analysis", "risk-identification", "legal-workflows"],
+    featured: false,
+    status: "approved"
+  },
+
+  // AI Gaming & Entertainment
+  {
+    name: "Scenario",
+    shortDescription: "AI-generated game assets with custom style training for game developers",
+    detailedDescription: "AI platform specifically designed for game asset creation. Features custom style training, consistent character generation, environment assets, and seamless integration with game development workflows. Used by indie developers and major studios.",
+    website: "https://scenario.com",
+    category: "ai-gaming",
+    pricingModel: "subscription",
+    rating: "4.4",
+    reviewCount: "320",
+    tags: ["game-assets", "custom-style", "character-generation", "game-development", "studios"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Leonardo.ai",
+    shortDescription: "AI art generation optimized for game development and creative projects",
+    detailedDescription: "Powerful AI image generation platform optimized for game development, featuring consistent character creation, environment design, asset generation, and style transfer. Offers fine-tuned models specifically for gaming and creative industries.",
+    website: "https://leonardo.ai",
+    category: "ai-gaming",
+    pricingModel: "freemium",
+    rating: "4.6",
+    reviewCount: "750",
+    tags: ["ai-art", "game-development", "character-creation", "environment-design", "creative"],
+    featured: false,
+    status: "approved"
+  },
+
+  // AI Real Estate & Property
+  {
+    name: "Zillow Instant Offers",
+    shortDescription: "AI-powered home valuation and instant property offers",
+    detailedDescription: "Advanced AI platform for automated property valuation and instant home offers. Uses machine learning algorithms, market data analysis, and predictive modeling to provide accurate property assessments and streamlined real estate transactions.",
+    website: "https://zillow.com/instant-offers",
+    category: "ai-real-estate",
+    pricingModel: "commission",
+    rating: "4.1",
+    reviewCount: "1200",
+    tags: ["property-valuation", "instant-offers", "market-analysis", "predictive-modeling", "real-estate"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Skyline AI",
+    shortDescription: "AI-driven real estate investment analysis and portfolio optimization",
+    detailedDescription: "Institutional real estate investment platform using AI for property analysis, investment decisions, and portfolio optimization. Features predictive analytics, risk assessment, market intelligence, and automated investment strategies for real estate professionals.",
+    website: "https://skyline.ai",
+    category: "ai-real-estate",
+    pricingModel: "enterprise",
+    rating: "4.3",
+    reviewCount: "85",
+    tags: ["investment-analysis", "portfolio-optimization", "predictive-analytics", "institutional", "risk-assessment"],
+    featured: false,
+    status: "approved"
+  },
+
+  // AI Agriculture & Environment
+  {
+    name: "Climate.ai",
+    shortDescription: "AI climate resilience platform for agriculture and supply chain",
+    detailedDescription: "Climate intelligence platform using AI to help businesses adapt to climate change. Features crop yield prediction, weather forecasting, supply chain resilience, and climate risk assessment for agriculture and food industries.",
+    website: "https://climate.ai",
+    category: "ai-agriculture",
+    pricingModel: "enterprise",
+    rating: "4.4",
+    reviewCount: "120",
+    tags: ["climate-resilience", "crop-prediction", "weather-forecasting", "supply-chain", "agriculture"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "Blue River Technology",
+    shortDescription: "John Deere's AI-powered precision agriculture and smart farming",
+    detailedDescription: "Advanced precision agriculture platform acquired by John Deere, featuring AI-powered crop monitoring, automated weed detection, precision spraying, and smart farming technologies. Revolutionizing agriculture through computer vision and machine learning.",
+    website: "https://bluerivertechnology.com",
+    category: "ai-agriculture",
+    pricingModel: "enterprise",
+    rating: "4.5",
+    reviewCount: "95",
+    tags: ["precision-agriculture", "john-deere", "crop-monitoring", "automated-spraying", "smart-farming"],
+    featured: false,
+    status: "approved"
+  },
+
+  // AI Cybersecurity
+  {
+    name: "Darktrace",
+    shortDescription: "AI cybersecurity platform with autonomous threat detection and response",
+    detailedDescription: "Leading AI cybersecurity platform that uses machine learning to detect and respond to cyber threats in real-time. Features autonomous threat hunting, behavioral analysis, incident response, and enterprise-grade security for organizations worldwide.",
+    website: "https://darktrace.com",
+    category: "ai-cybersecurity",
+    pricingModel: "enterprise",
+    rating: "4.3",
+    reviewCount: "380",
+    tags: ["threat-detection", "autonomous-response", "behavioral-analysis", "incident-response", "enterprise-security"],
+    featured: false,
+    status: "approved"
+  },
+  {
+    name: "CrowdStrike Falcon",
+    shortDescription: "AI-powered endpoint protection and threat intelligence platform",
+    detailedDescription: "Cloud-native endpoint protection platform powered by AI and machine learning. Features real-time threat detection, behavioral analysis, incident response, and comprehensive threat intelligence for enterprise cybersecurity.",
+    website: "https://crowdstrike.com/products/endpoint-security",
+    category: "ai-cybersecurity",
+    pricingModel: "enterprise",
+    rating: "4.6",
+    reviewCount: "950",
+    tags: ["endpoint-protection", "threat-intelligence", "cloud-native", "behavioral-analysis", "enterprise"],
+    featured: false,
+    status: "approved"
+  }
+];
+
+// Additional categories for the schema
+export const newCategories = [
+  "ai-automation",
+  "ai-video-tools", 
+  "ai-code-assistants",
+  "ai-marketing",
+  "ai-healthcare",
+  "ai-drug-discovery",
+  "ai-finance",
+  "ai-education",
+  "ai-legal-tech",
+  "ai-gaming",
+  "ai-real-estate", 
+  "ai-agriculture",
+  "ai-cybersecurity",
+  "productivity"
+];

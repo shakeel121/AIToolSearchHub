@@ -213,6 +213,25 @@ export default function AdminPanel() {
     }
   });
 
+  const seedEnhancedMutation = useMutation({
+    mutationFn: () => apiRequest("POST", "/api/admin/seed-enhanced"),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/submissions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      toast({ 
+        title: "Enhanced categories seeded", 
+        description: `${data.added || 0} new AI tools added across enhanced categories`
+      });
+    },
+    onError: (error) => {
+      toast({ 
+        title: "Enhanced seeding failed", 
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
+
   const openEditDialog = (submission: Submission) => {
     setEditingSubmission(submission);
     setFormData({
