@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import SearchResults from "@/components/search-results";
 import AdvertisementBanner from "@/components/advertisement-banner";
+import { SearchAutoSuggest } from "@/components/search-auto-suggest";
 import { apiRequest } from "@/lib/queryClient";
 
 const categories = [
@@ -113,10 +114,19 @@ export default function Home() {
     return grouped;
   };
 
-  const handleSearch = () => {
-    if (searchQuery.trim() || selectedCategory) {
+  const handleSearch = (query?: string, category?: string) => {
+    if (query !== undefined) setSearchQuery(query);
+    if (category !== undefined) setSelectedCategory(category);
+    
+    if ((query && query.trim()) || category || searchQuery.trim() || selectedCategory) {
       setIsSearching(true);
     }
+  };
+
+  const handleSuggestionSelect = (suggestion: any) => {
+    // Track click and redirect to the tool's website
+    trackClick(suggestion.id);
+    window.open(suggestion.website, '_blank', 'noopener,noreferrer');
   };
 
   const handleCategoryClick = (category: string) => {
@@ -152,21 +162,12 @@ export default function Home() {
               >
                 ← Back to Home
               </Button>
-              <div className="flex items-center justify-center space-x-4 mb-6">
-                <div className="relative flex-1 max-w-xl">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <Input
-                    type="text"
-                    placeholder="Search AI tools, products, and agents..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 py-3 text-lg"
-                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  />
-                </div>
-                <Button onClick={handleSearch} size="lg">
-                  Search
-                </Button>
+              <div className="mb-6">
+                <SearchAutoSuggest 
+                  onSearch={handleSearch}
+                  onSuggestionSelect={handleSuggestionSelect}
+                  className="w-full"
+                />
               </div>
               {selectedCategory && (
                 <Badge variant="outline" className="text-lg px-4 py-2">
@@ -200,22 +201,13 @@ export default function Home() {
             Your comprehensive directory for artificial intelligence solutions.
           </p>
           
-          {/* Search Bar */}
-          <div className="flex items-center justify-center space-x-4 mb-12">
-            <div className="relative flex-1 max-w-xl">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <Input
-                type="text"
-                placeholder="Search AI tools, products, and agents..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 py-4 text-lg border-2 border-gray-200 focus:border-blue-500"
-                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              />
-            </div>
-            <Button onClick={handleSearch} size="lg" className="px-8 py-4">
-              Search
-            </Button>
+          {/* Enhanced Search Bar with Auto-Suggest */}
+          <div className="mb-12">
+            <SearchAutoSuggest 
+              onSearch={handleSearch}
+              onSuggestionSelect={handleSuggestionSelect}
+              className="w-full"
+            />
           </div>
 
           {/* Real-time Stats */}
