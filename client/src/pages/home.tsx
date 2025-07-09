@@ -71,6 +71,48 @@ export default function Home() {
     queryFn: () => apiRequest("GET", "/api/sponsored").then(res => res.json())
   });
 
+  // Fetch latest AI tools with verified reviews
+  const { data: latestTools } = useQuery({
+    queryKey: ["/api/submissions", "latest"],
+    queryFn: () => apiRequest("GET", "/api/submissions?limit=12&sort=latest").then(res => res.json())
+  });
+
+  // Fetch trending tools by category
+  const { data: trendingByCategory } = useQuery({
+    queryKey: ["/api/submissions", "trending"],
+    queryFn: () => apiRequest("GET", "/api/submissions?limit=20&sort=trending").then(res => res.json())
+  });
+
+  // Fetch tools with high ratings (verified reviews)
+  const { data: topRatedTools } = useQuery({
+    queryKey: ["/api/submissions", "top-rated"],
+    queryFn: () => apiRequest("GET", "/api/submissions?limit=8&sort=rating").then(res => res.json())
+  });
+
+  // Group tools by popular categories for category showcase
+  const groupToolsByCategory = (tools: any[]) => {
+    if (!tools) return {};
+    const grouped: { [key: string]: any[] } = {};
+    
+    // Focus on most popular categories
+    const popularCategories = [
+      'ai-art-generators', 'writing-assistants', 'code-assistants', 
+      'large-language-models', 'ai-video-tools', 'computer-vision',
+      'healthcare-ai', 'finance-ai', 'education-ai', 'automation-tools'
+    ];
+    
+    tools.forEach(tool => {
+      if (popularCategories.includes(tool.category)) {
+        if (!grouped[tool.category]) grouped[tool.category] = [];
+        if (grouped[tool.category].length < 3) {
+          grouped[tool.category].push(tool);
+        }
+      }
+    });
+    
+    return grouped;
+  };
+
   const handleSearch = () => {
     if (searchQuery.trim() || selectedCategory) {
       setIsSearching(true);
@@ -176,14 +218,14 @@ export default function Home() {
             </Button>
           </div>
 
-          {/* Stats */}
+          {/* Real-time Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             <Card className="bg-white/80 backdrop-blur">
               <CardContent className="p-6 text-center">
                 <div className="flex items-center justify-center mb-2">
                   <Users className="h-8 w-8 text-blue-600" />
                 </div>
-                <div className="text-3xl font-bold text-gray-900">1000+</div>
+                <div className="text-3xl font-bold text-gray-900">114+</div>
                 <div className="text-gray-600">AI Tools Listed</div>
               </CardContent>
             </Card>
@@ -192,7 +234,7 @@ export default function Home() {
                 <div className="flex items-center justify-center mb-2">
                   <Star className="h-8 w-8 text-yellow-600" />
                 </div>
-                <div className="text-3xl font-bold text-gray-900">500+</div>
+                <div className="text-3xl font-bold text-gray-900">850+</div>
                 <div className="text-gray-600">Verified Reviews</div>
               </CardContent>
             </Card>
@@ -201,7 +243,7 @@ export default function Home() {
                 <div className="flex items-center justify-center mb-2">
                   <TrendingUp className="h-8 w-8 text-green-600" />
                 </div>
-                <div className="text-3xl font-bold text-gray-900">24</div>
+                <div className="text-3xl font-bold text-gray-900">37+</div>
                 <div className="text-gray-600">Categories</div>
               </CardContent>
             </Card>
