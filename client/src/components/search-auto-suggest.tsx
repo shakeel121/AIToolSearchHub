@@ -31,8 +31,8 @@ export function SearchAutoSuggest({ onSearch, onSuggestionSelect, className }: S
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
-  // Use proper debouncing with the library
-  const [debouncedQuery] = useDebounce(query, 150); // Faster debounce for better UX
+  // Use ultra-fast debouncing for instant search
+  const [debouncedQuery] = useDebounce(query, 80); // Ultra-fast 80ms debounce
 
   // Fetch suggestions
   const { data: suggestions, isLoading } = useQuery({

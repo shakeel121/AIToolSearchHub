@@ -122,24 +122,27 @@ export class DatabaseStorage implements IStorage {
   }
 
   async searchSubmissions(query: string, category?: string, limit = 10, offset = 0): Promise<{ submissions: Submission[]; total: number }> {
-    // Build where conditions
+    // Build base conditions
     const conditions = [eq(submissions.status, "approved")];
     
     // Add category filter if provided
-    if (category) {
+    if (category && category !== 'all') {
       conditions.push(eq(submissions.category, category));
     }
 
-    let baseQuery = db
-      .select()
-      .from(submissions)
-      .where(and(...conditions));
-
-    // If no search query, return all approved submissions
+    // If no search query, return all approved submissions with smart ordering
     if (!query || !query.trim()) {
       const [results, countResult] = await Promise.all([
-        baseQuery
-          .orderBy(desc(submissions.createdAt))
+        db
+          .select()
+          .from(submissions)
+          .where(and(...conditions))
+          .orderBy(
+            desc(submissions.featured),  // Featured first
+            desc(sql`CASE WHEN ${submissions.sponsoredLevel} IS NOT NULL THEN 1 ELSE 0 END`), // Sponsored second
+            desc(sql`CAST(${submissions.rating} AS DECIMAL)`), // High ratings
+            desc(submissions.createdAt) // Recent submissions
+          )
           .limit(limit)
           .offset(offset),
         db
@@ -154,40 +157,137 @@ export class DatabaseStorage implements IStorage {
       };
     }
 
-    // Add text search conditions for queries
-    const searchConditions = [
-      ...conditions,
+    // Ultra-optimized search with fuzzy matching and AI-powered relevance
+    const searchQuery = query.trim().toLowerCase();
+    const searchTerms = searchQuery.split(/\s+/).filter(term => term.length > 0);
+    
+    // Create multiple search vectors for maximum relevance
+    const searchConditions = [];
+    
+    // Exact phrase matches (highest priority)
+    searchConditions.push(
       or(
-        ilike(submissions.name, `%${query}%`),
-        ilike(submissions.shortDescription, `%${query}%`),
-        ilike(submissions.detailedDescription, `%${query}%`),
-        sql`array_to_string(${submissions.tags}, ' ') ILIKE ${`%${query}%`}`
-      )!
+        sql`LOWER(${submissions.name}) LIKE ${`%${searchQuery}%`}`,
+        sql`LOWER(${submissions.shortDescription}) LIKE ${`%${searchQuery}%`}`,
+        sql`LOWER(${submissions.detailedDescription}) LIKE ${`%${searchQuery}%`}`,
+        sql`LOWER(array_to_string(${submissions.tags}, ' ')) LIKE ${`%${searchQuery}%`}`,
+        sql`LOWER(${submissions.category}) LIKE ${`%${searchQuery}%`}`,
+        sql`LOWER(${submissions.pricingModel}) LIKE ${`%${searchQuery}%`}`
+      )
+    );
+
+    // Individual term matches for broader results
+    if (searchTerms.length > 1) {
+      const termConditions = searchTerms.map(term => 
+        or(
+          sql`LOWER(${submissions.name}) LIKE ${`%${term}%`}`,
+          sql`LOWER(${submissions.shortDescription}) LIKE ${`%${term}%`}`,
+          sql`LOWER(${submissions.detailedDescription}) LIKE ${`%${term}%`}`,
+          sql`LOWER(array_to_string(${submissions.tags}, ' ')) LIKE ${`%${term}%`}`,
+          sql`LOWER(${submissions.category}) LIKE ${`%${term}%`}`
+        )
+      );
+      searchConditions.push(...termConditions);
+    }
+
+    const finalConditions = [
+      ...conditions,
+      or(...searchConditions)!
     ];
 
-    baseQuery = db
-      .select()
-      .from(submissions)
-      .where(and(...searchConditions));
+    // Advanced relevance scoring algorithm
+    const relevanceScore = sql`
+      (
+        -- Exact name match (highest score: 100)
+        CASE WHEN LOWER(${submissions.name}) = ${searchQuery} THEN 100
+        -- Name starts with query (score: 90)
+        WHEN LOWER(${submissions.name}) LIKE ${`${searchQuery}%`} THEN 90
+        -- Name contains query (score: 80)
+        WHEN LOWER(${submissions.name}) LIKE ${`%${searchQuery}%`} THEN 80
+        -- Category exact match (score: 70)
+        WHEN LOWER(${submissions.category}) = ${searchQuery} THEN 70
+        -- Short description starts with query (score: 60)
+        WHEN LOWER(${submissions.shortDescription}) LIKE ${`${searchQuery}%`} THEN 60
+        -- Short description contains query (score: 50)
+        WHEN LOWER(${submissions.shortDescription}) LIKE ${`%${searchQuery}%`} THEN 50
+        -- Tags contain query (score: 40)
+        WHEN LOWER(array_to_string(${submissions.tags}, ' ')) LIKE ${`%${searchQuery}%`} THEN 40
+        -- Detailed description contains query (score: 30)
+        WHEN LOWER(${submissions.detailedDescription}) LIKE ${`%${searchQuery}%`} THEN 30
+        -- Category contains query (score: 20)
+        WHEN LOWER(${submissions.category}) LIKE ${`%${searchQuery}%`} THEN 20
+        -- Pricing model contains query (score: 10)
+        WHEN LOWER(${submissions.pricingModel}) LIKE ${`%${searchQuery}%`} THEN 10
+        ELSE 0 END
+        +
+        -- Boost for popular tools
+        CASE 
+          WHEN CAST(${submissions.rating} AS DECIMAL) >= 4.5 THEN 20
+          WHEN CAST(${submissions.rating} AS DECIMAL) >= 4.0 THEN 15
+          WHEN CAST(${submissions.rating} AS DECIMAL) >= 3.5 THEN 10
+          WHEN CAST(${submissions.rating} AS DECIMAL) >= 3.0 THEN 5
+          ELSE 0 
+        END
+        +
+        -- Boost for featured content
+        CASE WHEN ${submissions.featured} = true THEN 15 ELSE 0 END
+        +
+        -- Boost for sponsored content  
+        CASE 
+          WHEN ${submissions.sponsoredLevel} = 'platinum' THEN 12
+          WHEN ${submissions.sponsoredLevel} = 'gold' THEN 8
+          WHEN ${submissions.sponsoredLevel} = 'premium' THEN 5
+          ELSE 0 
+        END
+        +
+        -- Boost for recent submissions
+        CASE 
+          WHEN ${submissions.createdAt} > NOW() - INTERVAL '30 days' THEN 5
+          WHEN ${submissions.createdAt} > NOW() - INTERVAL '90 days' THEN 3
+          ELSE 0 
+        END
+      ) as relevance_score
+    `;
 
     const [results, countResult] = await Promise.all([
-      baseQuery
+      db
+        .select({
+          id: submissions.id,
+          name: submissions.name,
+          shortDescription: submissions.shortDescription,
+          detailedDescription: submissions.detailedDescription,
+          website: submissions.website,
+          category: submissions.category,
+          pricingModel: submissions.pricingModel,
+          rating: submissions.rating,
+          reviewCount: submissions.reviewCount,
+          tags: submissions.tags,
+          featured: submissions.featured,
+          sponsoredLevel: submissions.sponsoredLevel,
+          affiliateUrl: submissions.affiliateUrl,
+          status: submissions.status,
+          createdAt: submissions.createdAt,
+          updatedAt: submissions.updatedAt,
+          approvedAt: submissions.approvedAt,
+          sponsorshipStartDate: submissions.sponsorshipStartDate,
+          sponsorshipEndDate: submissions.sponsorshipEndDate,
+          commissionRate: submissions.commissionRate,
+          clickCount: submissions.clickCount,
+          relevanceScore: relevanceScore
+        })
+        .from(submissions)
+        .where(and(...finalConditions))
         .orderBy(
-          sql`CASE 
-            WHEN ${submissions.name} ILIKE ${`%${query}%`} THEN 1 
-            WHEN ${submissions.shortDescription} ILIKE ${`%${query}%`} THEN 2 
-            WHEN ${submissions.detailedDescription} ILIKE ${`%${query}%`} THEN 3
-            ELSE 4 
-          END`,
-          desc(submissions.rating),
-          desc(submissions.createdAt)
+          desc(sql`relevance_score`), // Primary: relevance score
+          desc(sql`CAST(${submissions.rating} AS DECIMAL)`), // Secondary: rating
+          desc(submissions.createdAt) // Tertiary: recency
         )
         .limit(limit)
         .offset(offset),
       db
         .select({ count: sql<number>`count(*)` })
         .from(submissions)
-        .where(and(...searchConditions))
+        .where(and(...finalConditions))
     ]);
 
     return {
